@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Catalog</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-graduation-cap"></i> Course Catalog</h1>
+            <p>Browse and filter engineering courses with detailed information</p>
+        </header>
+
+        <div class="controls">
+            <div class="search-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search courses...">
+                </div>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="categoryFilter">Category:</label>
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+
+
+                <div class="filter-group">
+                    <label for="fosFilter">Field of Specialization:</label>
+                    <select id="fosFilter">
+                        <option value="">All Specializations</option>
+                    </select>
+                </div>
+
+                <div class="filter-group availability-filter-group">
+                    <label>Course Types:</label>
+                    <div class="availability-filters">
+                        <div class="fos-categories-section">
+                            <div class="section-header">
+                                <h4>FoS Course Types (60 CP):</h4>
+                                <button class="toggle-all-btn" onclick="courseCatalog.toggleAll('fosCategory')">
+                                    <i class="fas fa-check-square"></i> Toggle All
+                                </button>
+                            </div>
+                            <div id="fosCategoriesCheckboxes" class="checkbox-container">
+                                <!-- FoS category checkboxes will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="general-section">
+                            <div class="section-header">
+                                <h4>Program Components:</h4>
+                                <button class="toggle-all-btn" onclick="courseCatalog.toggleAll('general')">
+                                    <i class="fas fa-check-square"></i> Toggle All
+                                </button>
+                            </div>
+                            <div id="generalCheckboxes" class="checkbox-container">
+                                <!-- General checkboxes will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="clearFilters" class="clear-btn">
+                    <i class="fas fa-times"></i> Clear Filters
+                </button>
+            </div>
+        </div>
+
+        <div class="results-info">
+            <span id="resultsCount">Loading courses...</span>
+        </div>
+
+        <div class="courses-grid" id="coursesGrid">
+            <!-- Courses will be dynamically loaded here -->
+        </div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>No courses found</h3>
+            <p>Try adjusting your search criteria or filters</p>
+        </div>
+    </div>
+
+    <!-- PDF Viewer Modal -->
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="pdfTitle">Course Information</h3>
+                <button class="close-btn" id="closePdfModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="pdfViewer" src="" width="100%" height="600px"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
