@@ -219,7 +219,6 @@ class CourseCatalog {
             categoryFilter.appendChild(option);
         });
 
-
         // Populate FoS dropdown
         this.populateFosDropdown();
         
@@ -460,81 +459,101 @@ class CourseCatalog {
     }
     
     updateDynamicCounts() {
-        // Update FoS dropdown counts
-        this.updateFosDropdownCounts();
+        // Update dropdown counts
+        this.updateCategoryCounts();
+        this.updateFosCounts();
         
-        // Update FoS Course Types counts
-        this.updateFosCategoriesCounts();
-        
-        // Update Program Components counts
+        // Update checkbox counts
+        this.updateFosCategoryCounts();
         this.updateGeneralCounts();
     }
-    
-    updateFosDropdownCounts() {
-        const fosFilter = document.getElementById('fosFilter');
+
+    updateCategoryCounts() {
+        const categoryFilter = document.getElementById('categoryFilter');
         
-        // Count unique courses for each FoS based on current filters (excluding FoS filter itself)
-        const fosCounts = new Map();
+        // Temporarily disable change event
+        const originalHandler = categoryFilter.onchange;
+        categoryFilter.onchange = null;
         
-        this.courses.forEach(course => {
-            if (Array.isArray(course['Available in'])) {
-                // Check if this course is available in any FoS (excluding Elective Area)
-                const availableInFos = new Set();
-                
-                course['Available in'].forEach(avail => {
-                    if (avail.FoS && !avail.FoS.includes('Elective Area')) {
-                        availableInFos.add(avail.FoS);
-                    }
-                });
-                
-                // For each FoS this course is available in, count it once
-                availableInFos.forEach(fos => {
-                    if (!fosCounts.has(fos)) {
-                        fosCounts.set(fos, 0);
-                    }
-                    
-                    // Check if this course would be shown with current filters (excluding FoS filter)
-                    if (this.courseMatchesCurrentFilters(course, true)) {
-                        fosCounts.set(fos, fosCounts.get(fos) + 1);
-                    }
-                });
+        // Count each category from filtered courses
+        const categoryCounts = {};
+        this.filteredCourses.forEach(course => {
+            let courseCategories;
+            if (course.categories && Array.isArray(course.categories)) {
+                courseCategories = course.categories;
+            } else {
+                courseCategories = this.extractCategories(course.Name);
+            }
+            
+            courseCategories.forEach(category => {
+                categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+            });
+        });
+        
+        // Update dropdown options
+        Array.from(categoryFilter.options).forEach(option => {
+            if (option.value && categoryCounts[option.value]) {
+                option.textContent = `${option.value} (${categoryCounts[option.value]})`;
+            } else if (option.value) {
+                option.textContent = `${option.value} (0)`;
             }
         });
         
-        // Temporarily disable change event to prevent infinite loop
+        // Restore change event
+        categoryFilter.onchange = originalHandler;
+    }
+
+    updateFosCounts() {
+        const fosFilter = document.getElementById('fosFilter');
+        
+        // Temporarily disable change event
         const originalHandler = fosFilter.onchange;
         fosFilter.onchange = null;
         
-        // Update dropdown options with new counts
-        Array.from(fosFilter.options).forEach(option => {
-            if (option.value && fosCounts.has(option.value)) {
-                const shortName = option.value.replace('Field of Specialization in Mechatronics and Information Technology / ', '');
-                option.textContent = `${shortName} (${fosCounts.get(option.value)})`;
+        // Count each FoS from filtered courses
+        const fosCounts = {};
+        this.filteredCourses.forEach(course => {
+            if (Array.isArray(course['Available in'])) {
+                course['Available in'].forEach(avail => {
+                    if (avail.FoS && !avail.FoS.includes('Elective Area')) {
+                        fosCounts[avail.FoS] = (fosCounts[avail.FoS] || 0) + 1;
+                    }
+                });
             }
         });
         
-        // Restore the change event handler
+        // Update dropdown options
+        Array.from(fosFilter.options).forEach(option => {
+            if (option.value && fosCounts[option.value]) {
+                const shortName = option.value.replace('Field of Specialization in Mechatronics and Information Technology / ', '');
+                option.textContent = `${shortName} (${fosCounts[option.value]})`;
+            } else if (option.value) {
+                const shortName = option.value.replace('Field of Specialization in Mechatronics and Information Technology / ', '');
+                option.textContent = `${shortName} (0)`;
+            }
+        });
+        
+        // Restore change event
         fosFilter.onchange = originalHandler;
     }
-    
-    updateFosCategoriesCounts() {
-        const fosCategoryCheckboxes = document.querySelectorAll('input[type="checkbox"][data-type="fosCategory"]');
+
+    updateFosCategoryCounts() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][data-type="fosCategory"]');
         const fosFilter = document.getElementById('fosFilter').value;
         
-        fosCategoryCheckboxes.forEach(checkbox => {
+        checkboxes.forEach(checkbox => {
             const category = checkbox.value;
             let count = 0;
             
-            this.courses.forEach(course => {
+            this.filteredCourses.forEach(course => {
                 if (Array.isArray(course['Available in'])) {
-                    // Check if course has this category AND matches current FoS filter
                     const hasCategory = course['Available in'].some(avail => {
                         const fosMatches = !fosFilter || (avail.FoS && avail.FoS === fosFilter);
                         const categoryMatches = avail.subtype && avail.subtype.includes(category);
                         return fosMatches && categoryMatches;
                     });
                     
-                    if (hasCategory && this.courseMatchesCurrentFilters(course, false)) {
+                    if (hasCategory) {
                         count++;
                     }
                 }
@@ -547,15 +566,15 @@ class CourseCatalog {
             }
         });
     }
-    
+
     updateGeneralCounts() {
-        const generalCheckboxes = document.querySelectorAll('input[type="checkbox"][data-type="general"]');
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][data-type="general"]');
         
-        generalCheckboxes.forEach(checkbox => {
+        checkboxes.forEach(checkbox => {
             const category = checkbox.value;
             let count = 0;
             
-            this.courses.forEach(course => {
+            this.filteredCourses.forEach(course => {
                 let matches = false;
                 
                 if (category.includes('Master\'s Thesis') && course.Name === 'Master\'s Thesis') {
@@ -568,7 +587,7 @@ class CourseCatalog {
                     );
                 }
                 
-                if (matches && this.courseMatchesCurrentFilters(course, false)) {
+                if (matches) {
                     count++;
                 }
             });
@@ -580,6 +599,9 @@ class CourseCatalog {
             }
         });
     }
+    
+    
+    
     
     courseMatchesCurrentFilters(course, excludeFosFilter = false) {
         const categoryFilter = document.getElementById('categoryFilter').value;

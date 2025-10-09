@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Count Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { margin: 10px 0; padding: 10px; background: #f0f0f0; }
+        button { padding: 10px 15px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Count System Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Data</h3>
+        <div id="testData"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Filter Controls</h3>
+        <button onclick="testCounts()">Test All Counts</button>
+        <button onclick="filterByCategory('Machine Learning')">Filter: Machine Learning</button>
+        <button onclick="filterByFos('Industrial Informatics')">Filter: Industrial Informatics</button>
+        <button onclick="resetFilters()">Reset Filters</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Results</h3>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Simple test data
+        const testCourses = [
+            {
+                Name: "Machine Learning Basics",
+                categories: ["Machine Learning", "AI"],
+                "Available in": [
+                    {FoS: "Industrial Informatics", subtype: "Methodical"},
+                    {FoS: "Energy Technology", subtype: "General"}
+                ]
+            },
+            {
+                Name: "Control Systems",
+                categories: ["Control", "Engineering"],
+                "Available in": [
+                    {FoS: "Industrial Informatics", subtype: "Methodical"},
+                    {FoS: "Industrial Informatics", subtype: "General"}
+                ]
+            },
+            {
+                Name: "Data Science",
+                categories: ["Machine Learning", "Statistics"],
+                "Available in": [
+                    {FoS: "Energy Technology", subtype: "Methodical"}
+                ]
+            },
+            {
+                Name: "Robotics",
+                categories: ["Robotics", "Engineering"],
+                "Available in": [
+                    {FoS: "Industrial Informatics", subtype: "General"}
+                ]
+            }
+        ];
+
+        let filteredCourses = [...testCourses];
+        let currentFilters = {
+            category: null,
+            fos: null,
+            searchTerm: ""
+        };
+
+        function displayTestData() {
+            document.getElementById('testData').innerHTML = `
+                <p><strong>Total Courses:</strong> ${testCourses.length}</p>
+                <p><strong>Filtered Courses:</strong> ${filteredCourses.length}</p>
+                <p><strong>Current Filters:</strong> ${JSON.stringify(currentFilters)}</p>
+            `;
+        }
+
+        function getCounts() {
+            const results = {
+                categories: {},
+                fos: {},
+                courseTypes: {}
+            };
+
+            // Count categories
+            filteredCourses.forEach(course => {
+                if (course.categories) {
+                    course.categories.forEach(cat => {
+                        results.categories[cat] = (results.categories[cat] || 0) + 1;
+                    });
+                }
+            });
+
+            // Count FoS
+            filteredCourses.forEach(course => {
+                if (course["Available in"]) {
+                    course["Available in"].forEach(avail => {
+                        if (avail.FoS && !avail.FoS.includes('Elective Area')) {
+                            results.fos[avail.FoS] = (results.fos[avail.FoS] || 0) + 1;
+                        }
+                    });
+                }
+            });
+
+            // Count course types
+            filteredCourses.forEach(course => {
+                if (course["Available in"]) {
+                    course["Available in"].forEach(avail => {
+                        if (avail.subtype) {
+                            results.courseTypes[avail.subtype] = (results.courseTypes[avail.subtype] || 0) + 1;
+                        }
+                    });
+                }
+            });
+
+            return results;
+        }
+
+        function testCounts() {
+            const counts = getCounts();
+            document.getElementById('results').innerHTML = `
+                <h4>Category Counts:</h4>
+                <div class="result">${Object.entries(counts.categories).map(([cat, count]) => `${cat}: ${count}`).join('<br>')}</div>
+                
+                <h4>FoS Counts:</h4>
+                <div class="result">${Object.entries(counts.fos).map(([fos, count]) => `${fos}: ${count}`).join('<br>')}</div>
+                
+                <h4>Course Type Counts:</h4>
+                <div class="result">${Object.entries(counts.courseTypes).map(([type, count]) => `${type}: ${count}`).join('<br>')}</div>
+            `;
+            displayTestData();
+        }
+
+        function filterByCategory(category) {
+            currentFilters.category = category;
+            applyFilters();
+        }
+
+        function filterByFos(fos) {
+            currentFilters.fos = fos;
+            applyFilters();
+        }
+
+        function resetFilters() {
+            currentFilters = { category: null, fos: null, searchTerm: "" };
+            filteredCourses = [...testCourses];
+            testCounts();
+        }
+
+        function applyFilters() {
+            filteredCourses = testCourses.filter(course => {
+                // Category filter
+                if (currentFilters.category) {
+                    if (!course.categories || !course.categories.includes(currentFilters.category)) {
+                        return false;
+                    }
+                }
+
+                // FoS filter
+                if (currentFilters.fos) {
+                    if (!course["Available in"] || !course["Available in"].some(avail => avail.FoS === currentFilters.fos)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            testCounts();
+        }
+
+        // Initialize
+        displayTestData();
+        testCounts();
+    </script>
+</body>
+</html>
