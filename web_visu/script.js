@@ -452,14 +452,33 @@ class CourseCatalog {
             });
         });
         
-        // Update dropdown options
-        Array.from(categoryFilter.options).forEach(option => {
-            if (option.value && categoryCounts[option.value]) {
-                option.textContent = `${option.value} (${categoryCounts[option.value]})`;
-            } else if (option.value) {
-                option.textContent = `${option.value} (0)`;
-            }
+        // Get current selection to preserve it
+        const currentValue = categoryFilter.value;
+        
+        // Clear all options except "All Categories"
+        const allOption = categoryFilter.querySelector('option[value=""]');
+        categoryFilter.innerHTML = '';
+        if (allOption) {
+            categoryFilter.appendChild(allOption);
+        }
+        
+        // Sort categories by count (descending) then by name
+        const sortedCategories = Object.entries(categoryCounts)
+            .sort((a, b) => {
+                if (b[1] !== a[1]) return b[1] - a[1]; // Sort by count first
+                return a[0].localeCompare(b[0]); // Then by name
+            });
+        
+        // Add sorted options
+        sortedCategories.forEach(([category, count]) => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = `${category} (${count})`;
+            categoryFilter.appendChild(option);
         });
+        
+        // Restore selection
+        categoryFilter.value = currentValue;
         
         // Restore change event
         categoryFilter.onchange = originalHandler;
