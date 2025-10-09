@@ -1,0 +1,78 @@
+/* Responsive Design */
+
+/* Tablet */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-md);
+    }
+    
+    .header h1 {
+        font-size: var(--font-size-3xl);
+    }
+    
+    .controls {
+        padding: var(--spacing-lg);
+    }
+    
+    .filters {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .courses-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .course-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
+    
+    .availability-filters {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+    }
+    
+    .fos-section, .subtype-section, .general-section {
+        padding: var(--spacing-md);
+    }
+    
+    .checkbox-container {
+        max-height: 150px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: var(--font-size-2xl);
+    }
+    
+    .header p {
+        font-size: var(--font-size-base);
+    }
+    
+    .search-box input {
+        padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 45px;
+        font-size: var(--font-size-base);
+    }
+    
+    .course-title {
+        font-size: var(--font-size-lg);
+    }
+    
+    .study-program-group {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .study-program-group select {
+        min-width: 250px;
+    }
+}

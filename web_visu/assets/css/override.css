@@ -1,0 +1,112 @@
+/* Override styles to work with existing functionality */
+
+/* Ensure the new CSS variables work with existing styles */
+:root {
+    /* Override any conflicting styles from the existing styles.css */
+    --existing-primary: #667eea;
+    --existing-secondary: #764ba2;
+    --existing-accent: #ffd700;
+}
+
+/* Make sure the new modular CSS doesn't conflict with existing styles */
+.container {
+    /* Ensure container styles from existing CSS take precedence */
+}
+
+/* Ensure existing functionality still works */
+.course-card {
+    /* Keep existing course card styles */
+}
+
+/* Study program selector improvements */
+.study-program-selector {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.study-program-selector::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    pointer-events: none;
+}
+
+.study-program-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.study-program-group label {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.study-program-group label i {
+    color: #ffd700;
+    font-size: 1.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.study-program-group select {
+    font-size: 1.3rem;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 15px;
+    background: white;
+    color: #333;
+    min-width: 300px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    font-weight: 600;
+}
+
+.study-program-group select:focus {
+    outline: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.study-program-group select:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* Current program display */
+.current-program {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: white;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.current-program i {
+    color: #ffd700;
+}

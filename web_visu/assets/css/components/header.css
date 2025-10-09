@@ -1,0 +1,42 @@
+/* Header Styles */
+.header {
+    text-align: center;
+    margin-bottom: var(--spacing-xxl);
+    color: var(--text-white);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.header h1 {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-sm);
+    font-weight: var(--font-weight-bold);
+}
+
+.header h1 i {
+    margin-right: var(--spacing-md);
+    color: var(--accent-color);
+}
+
+.header p {
+    font-size: var(--font-size-xl);
+    opacity: 0.9;
+}
+
+.current-program {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-white);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.current-program i {
+    color: var(--accent-color);
+}

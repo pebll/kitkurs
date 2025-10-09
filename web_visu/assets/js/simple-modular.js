@@ -1,0 +1,867 @@
+// Simple Modular Implementation
+// This demonstrates the new structure while maintaining compatibility
+
+// Utility functions
+const Utils = {
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+
+    showLoading(containerId = 'coursesGrid') {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            `;
+        }
+    },
+
+    showError(message, containerId = 'coursesGrid') {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+    }
+};
+
+// Constants
+const CONSTANTS = {
+    SELECTORS: {
+        SEARCH_INPUT: '#searchInput',
+        CATEGORY_FILTER: '#categoryFilter',
+        FOS_FILTER: '#fosFilter',
+        COURSES_GRID: '#coursesGrid',
+        RESULTS_COUNT: '#resultsCount',
+        NO_RESULTS: '#noResults',
+        PDF_MODAL: '#pdfModal',
+        PDF_VIEWER: '#pdfViewer',
+        PDF_TITLE: '#pdfTitle',
+        CLOSE_PDF_MODAL: '#closePdfModal'
+    }
+};
+
+// Data Loader Module
+class DataLoader {
+    constructor() {
+        this.courses = [];
+    }
+
+    async loadCourses() {
+        try {
+            const response = await fetch('./study_programs/mechatronics_master/courses.json');
+            if (!response.ok) {
+                throw new Error('Failed to fetch courses');
+            }
+            this.courses = await response.json();
+            console.log(`Loaded ${this.courses.length} courses`);
+            return this.courses;
+        } catch (error) {
+            console.error('Error loading courses:', error);
+            throw error;
+        }
+    }
+
+    getCourses() {
+        return this.courses;
+    }
+}
+
+// Search Component
+class SearchComponent {
+    constructor(courseCatalog) {
+        this.courseCatalog = courseCatalog;
+        this.searchTerm = '';
+        this.debouncedSearch = Utils.debounce(this.handleSearch.bind(this), 300);
+    }
+
+    handleSearch(searchTerm) {
+        this.searchTerm = searchTerm.toLowerCase();
+        this.courseCatalog.handleFilter();
+    }
+
+    getSearchTerm() {
+        return this.searchTerm;
+    }
+
+    clearSearch() {
+        const searchInput = document.querySelector(CONSTANTS.SELECTORS.SEARCH_INPUT);
+        if (searchInput) {
+            searchInput.value = '';
+            this.searchTerm = '';
+        }
+    }
+}
+
+// Filter Component
+class FilterComponent {
+    constructor(courseCatalog) {
+        this.courseCatalog = courseCatalog;
+        this.categories = new Set();
+        this.fosOptions = new Set();
+        this.fosCategoriesOptions = new Set();
+        this.generalOptions = new Set();
+    }
+
+    extractFilterOptions(courses) {
+        courses.forEach(course => {
+            // Handle categories
+            if (course.categories && Array.isArray(course.categories)) {
+                course.categories.forEach(cat => this.categories.add(cat));
+            } else {
+                const categories = this.extractCategories(course.Name);
+                categories.forEach(cat => this.categories.add(cat));
+            }
+            
+            // Extract availability options
+            if (Array.isArray(course['Available in'])) {
+                course['Available in'].forEach(avail => {
+                    if (avail.FoS && !avail.FoS.includes('Elective Area')) {
+                        this.fosOptions.add(avail.FoS);
+                    }
+                    if (avail.subtype && avail.subtype !== 'Elective Area in Mechatronics and Information Technology') {
+                        this.fosCategoriesOptions.add(avail.subtype);
+                    }
+                });
+            } else if (course['Available in'] && course['Available in'].trim()) {
+                const availability = course['Available in'].split(',').map(a => a.trim());
+                availability.forEach(av => {
+                    this.generalOptions.add(av);
+                });
+            }
+        });
+        
+        this.generalOptions.add('Master\'s Thesis (30 CP)');
+        this.generalOptions.add('Interdisciplinary Qualifications (8 CP)');
+        this.generalOptions.add('Elective Area (22 CP)');
+    }
+
+    extractCategories(courseName) {
+        const categories = [];
+        const name = courseName.toLowerCase();
+        
+        const categoryKeywords = {
+            'Artificial Intelligence': ['artificial intelligence', 'ai', 'machine learning', 'deep learning', 'neural networks'],
+            'Robotics': ['robotics', 'robot', 'humanoid', 'mobile robotics', 'automation'],
+            'Energy': ['energy', 'power', 'solar', 'renewable', 'battery', 'fuel cell'],
+            'Automotive': ['automotive', 'vehicle', 'automobile', 'driving', 'powertrain'],
+            'Electronics': ['electronics', 'circuit', 'digital', 'analog', 'hardware'],
+            'Control Systems': ['control', 'automation', 'feedback', 'regulation'],
+            'Materials': ['materials', 'polymers', 'nanomaterials', 'lightweight'],
+            'Manufacturing': ['manufacturing', 'production', 'logistics', 'supply chain'],
+            'Optics': ['optics', 'optical', 'photonics', 'laser', 'lighting'],
+            'Biomedical': ['biomedical', 'bio', 'medical', 'physiological', 'bionics'],
+            'Communication': ['communication', 'signal processing', 'information', 'data'],
+            'Mechanical': ['mechanical', 'dynamics', 'mechanics', 'machines'],
+            'Software': ['software', 'programming', 'algorithms', 'data analytics'],
+            'Microsystems': ['microsystem', 'micro', 'nano', 'mems', 'microtechnology']
+        };
+
+        Object.entries(categoryKeywords).forEach(([category, keywords]) => {
+            if (keywords.some(keyword => name.includes(keyword))) {
+                categories.push(category);
+            }
+        });
+
+        if (categories.length === 0) {
+            if (name.includes('laboratory') || name.includes('lab')) {
+                categories.push('Laboratory');
+            } else if (name.includes('seminar')) {
+                categories.push('Seminar');
+            } else if (name.includes('project')) {
+                categories.push('Project');
+            } else if (name.includes('practical')) {
+                categories.push('Practical');
+            } else {
+                categories.push('General Engineering');
+            }
+        }
+
+        return categories;
+    }
+
+    populateFilters() {
+        this.populateCategoryFilter();
+        this.populateFosDropdown();
+        this.populateCheckboxes('fosCategoriesCheckboxes', this.fosCategoriesOptions, 'fosCategory');
+        this.populateCheckboxes('generalCheckboxes', this.generalOptions, 'general');
+    }
+
+    populateCategoryFilter() {
+        const categoryFilter = document.querySelector(CONSTANTS.SELECTORS.CATEGORY_FILTER);
+        if (!categoryFilter) return;
+
+        categoryFilter.innerHTML = '<option value="">All Categories</option>';
+        const sortedCategories = Array.from(this.categories).sort();
+        
+        sortedCategories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            categoryFilter.appendChild(option);
+        });
+    }
+
+    populateFosDropdown() {
+        const fosFilter = document.querySelector(CONSTANTS.SELECTORS.FOS_FILTER);
+        if (!fosFilter) return;
+
+        fosFilter.innerHTML = '<option value="">All Specializations</option>';
+        const sortedFos = Array.from(this.fosOptions).sort();
+        
+        sortedFos.forEach(fos => {
+            const option = document.createElement('option');
+            option.value = fos;
+            const shortName = fos.replace('Field of Specialization in Mechatronics and Information Technology / ', '');
+            option.textContent = shortName;
+            fosFilter.appendChild(option);
+        });
+    }
+
+    populateCheckboxes(containerId, optionsSet, type) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = '';
+        const sortedOptions = Array.from(optionsSet).sort();
+        
+        sortedOptions.forEach(option => {
+            const checkboxItem = document.createElement('div');
+            checkboxItem.className = 'checkbox-item';
+                
+            const checkboxId = `${type}_${option.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            
+            checkboxItem.innerHTML = `
+                <input type="checkbox" id="${checkboxId}" value="${option}" data-type="${type}">
+                <label for="${checkboxId}">${option}</label>
+                <span class="count">0</span>
+            `;
+            
+            container.appendChild(checkboxItem);
+        });
+    }
+
+    setDefaultFilters() {
+        const fosFilter = document.querySelector(CONSTANTS.SELECTORS.FOS_FILTER);
+        const industrialInformaticsOption = Array.from(fosFilter.options).find(option => 
+            option.value.includes('Industrial Informatics and Systems Engineering')
+        );
+        if (industrialInformaticsOption) {
+            fosFilter.value = industrialInformaticsOption.value;
+        }
+        
+        document.querySelectorAll('input[type="checkbox"][data-type="fosCategory"]').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        
+        document.querySelectorAll('input[type="checkbox"][data-type="general"]').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    }
+
+    getSelectedCheckboxes(type) {
+        const checkboxes = document.querySelectorAll(`input[type="checkbox"][data-type="${type}"]:checked`);
+        return Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    matchesFilters(course, searchTerm) {
+        // Search filter
+        if (searchTerm && !course.Name.toLowerCase().includes(searchTerm)) {
+            return false;
+        }
+
+        // Category filter
+        const categoryFilter = document.querySelector(CONSTANTS.SELECTORS.CATEGORY_FILTER);
+        if (categoryFilter && categoryFilter.value) {
+            let courseCategories;
+            if (course.categories && Array.isArray(course.categories)) {
+                courseCategories = course.categories;
+            } else {
+                courseCategories = this.extractCategories(course.Name);
+            }
+            if (!courseCategories.includes(categoryFilter.value)) {
+                return false;
+            }
+        }
+
+        // FoS filter
+        const fosFilter = document.querySelector(CONSTANTS.SELECTORS.FOS_FILTER);
+        if (fosFilter && fosFilter.value) {
+            const isElectiveAreaCourse = Array.isArray(course['Available in']) && 
+                course['Available in'].some(avail => 
+                    avail.FoS && avail.FoS.includes('Elective Area')
+                );
+            
+            if (!isElectiveAreaCourse) {
+                let matchesFos = false;
+                if (Array.isArray(course['Available in'])) {
+                    matchesFos = course['Available in'].some(avail => 
+                        avail.FoS && avail.FoS === fosFilter.value && !avail.FoS.includes('Elective Area')
+                    );
+                }
+                if (!matchesFos) {
+                    return false;
+                }
+            }
+        }
+
+        // Course type filters
+        const selectedFosCategories = this.getSelectedCheckboxes('fosCategory');
+        const selectedGeneral = this.getSelectedCheckboxes('general');
+
+        let matchesAnyCourseType = false;
+
+        // Check FoS categories
+        if (selectedFosCategories.length > 0) {
+            if (Array.isArray(course['Available in'])) {
+                const matchesFosCategory = course['Available in'].some(avail => {
+                    const fosMatches = !fosFilter?.value || (avail.FoS && avail.FoS === fosFilter.value);
+                    const categoryMatches = selectedFosCategories.some(category => 
+                        avail.subtype && avail.subtype.includes(category)
+                    );
+                    return fosMatches && categoryMatches;
+                });
+                if (matchesFosCategory) {
+                    matchesAnyCourseType = true;
+                }
+            }
+        }
+
+        // Check Program components
+        if (selectedGeneral.length > 0) {
+            const matchesGeneral = selectedGeneral.some(general => {
+                if (general.includes('Master\'s Thesis') && course.Name === 'Master\'s Thesis') {
+                    return true;
+                }
+                if (general.includes('Interdisciplinary Qualifications') && course.Name === 'Interdisciplinary Qualifications') {
+                    return true;
+                }
+                if (general.includes('Elective Area') && Array.isArray(course['Available in'])) {
+                    return course['Available in'].some(avail => 
+                        avail.FoS && avail.FoS.includes('Elective Area')
+                    );
+                }
+                return false;
+            });
+            if (matchesGeneral) {
+                matchesAnyCourseType = true;
+            }
+        }
+
+        if (selectedFosCategories.length > 0 || selectedGeneral.length > 0) {
+            return matchesAnyCourseType;
+        }
+
+        return false;
+    }
+}
+
+// Course Grid Component
+class CourseGrid {
+    constructor(courseCatalog) {
+        this.courseCatalog = courseCatalog;
+    }
+
+    render(courses) {
+        const coursesGrid = document.querySelector(CONSTANTS.SELECTORS.COURSES_GRID);
+        const resultsCount = document.querySelector(CONSTANTS.SELECTORS.RESULTS_COUNT);
+        const noResults = document.querySelector(CONSTANTS.SELECTORS.NO_RESULTS);
+
+        if (!coursesGrid || !resultsCount || !noResults) return;
+
+        resultsCount.textContent = `${courses.length} course${courses.length !== 1 ? 's' : ''} found`;
+
+        if (courses.length === 0) {
+            coursesGrid.style.display = 'none';
+            noResults.style.display = 'block';
+            return;
+        }
+
+        coursesGrid.style.display = 'grid';
+        noResults.style.display = 'none';
+
+        coursesGrid.innerHTML = courses.map(course => this.createCourseCard(course)).join('');
+    }
+
+    createCourseCard(course) {
+        let categories;
+        if (course.categories && Array.isArray(course.categories)) {
+            categories = course.categories;
+        } else {
+            categories = this.extractCategories(course.Name);
+        }
+        
+        let availabilityList = [];
+        
+        if (Array.isArray(course['Available in'])) {
+            const fosMap = new Map();
+            let hasElectiveArea = false;
+            
+            course['Available in'].forEach(avail => {
+                if (avail.FoS && avail.subtype) {
+                    if (avail.FoS.includes('Elective Area')) {
+                        hasElectiveArea = true;
+                    } else {
+                        const shortFos = avail.FoS.replace('Field of Specialization in Mechatronics and Information Technology / ', '');
+                        if (!fosMap.has(shortFos)) {
+                            fosMap.set(shortFos, []);
+                        }
+                        fosMap.get(shortFos).push(avail.subtype);
+                    }
+                }
+            });
+            
+            fosMap.forEach((subtypes, fos) => {
+                const uniqueSubtypes = [...new Set(subtypes)];
+                const clearSubtypes = uniqueSubtypes.map(subtype => {
+                    switch(subtype) {
+                        case 'Mandatory Electives - Methodical':
+                            return 'Methodical';
+                        case 'Mandatory Electives - General':
+                            return 'General';
+                        case 'Additive Electives':
+                            return 'Additive';
+                        case 'Elective Area in Mechatronics and Information Technology':
+                            return 'Elective Area';
+                        default:
+                            return subtype;
+                    }
+                });
+                availabilityList.push(`<strong>${fos}</strong>: ${clearSubtypes.join(', ')}`);
+            });
+            
+            if (hasElectiveArea) {
+                availabilityList.push('<strong>Elective Area</strong>');
+            }
+        } else if (course['Available in'] && course['Available in'].trim()) {
+            availabilityList = [course['Available in']];
+        }
+        
+        const maxVisible = 2;
+        const visibleItems = availabilityList.slice(0, maxVisible);
+        const hiddenItems = availabilityList.slice(maxVisible);
+        
+        let availabilityDisplay = visibleItems.join('<br>');
+        if (hiddenItems.length > 0) {
+            availabilityDisplay += `<br><em>(+${hiddenItems.length} more)</em>`;
+        }
+        
+        return `
+            <div class="course-card">
+                <h3 class="course-title">${course.Name}</h3>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-certificate"></i>
+                        <span class="detail-label">ECTS:</span>
+                        <span class="detail-value">${course.ECTS}</span>
+                    </div>
+                    
+                    <div class="detail-item availability-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span class="detail-label">Available:</span>
+                        <div class="availability-container">
+                            <div class="detail-value availability-text">${availabilityDisplay || 'Not specified'}</div>
+                            ${availabilityList.length > maxVisible ? `
+                                <button class="show-more-btn" onclick="courseCatalog.toggleAvailability(this, ${JSON.stringify(availabilityList).replace(/"/g, '&quot;')})">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-tags">
+                    ${categories.map(cat => `<span class="category-tag">${cat}</span>`).join('')}
+                </div>
+                
+                <button class="view-pdf-btn" onclick="courseCatalog.viewPDF('${course.pdf_link}', '${course.Name}')">
+                    <i class="fas fa-file-pdf"></i>
+                    View Course Details
+                </button>
+            </div>
+        `;
+    }
+
+    extractCategories(courseName) {
+        const categories = [];
+        const name = courseName.toLowerCase();
+        
+        const categoryKeywords = {
+            'Artificial Intelligence': ['artificial intelligence', 'ai', 'machine learning', 'deep learning', 'neural networks'],
+            'Robotics': ['robotics', 'robot', 'humanoid', 'mobile robotics', 'automation'],
+            'Energy': ['energy', 'power', 'solar', 'renewable', 'battery', 'fuel cell'],
+            'Automotive': ['automotive', 'vehicle', 'automobile', 'driving', 'powertrain'],
+            'Electronics': ['electronics', 'circuit', 'digital', 'analog', 'hardware'],
+            'Control Systems': ['control', 'automation', 'feedback', 'regulation'],
+            'Materials': ['materials', 'polymers', 'nanomaterials', 'lightweight'],
+            'Manufacturing': ['manufacturing', 'production', 'logistics', 'supply chain'],
+            'Optics': ['optics', 'optical', 'photonics', 'laser', 'lighting'],
+            'Biomedical': ['biomedical', 'bio', 'medical', 'physiological', 'bionics'],
+            'Communication': ['communication', 'signal processing', 'information', 'data'],
+            'Mechanical': ['mechanical', 'dynamics', 'mechanics', 'machines'],
+            'Software': ['software', 'programming', 'algorithms', 'data analytics'],
+            'Microsystems': ['microsystem', 'micro', 'nano', 'mems', 'microtechnology']
+        };
+
+        Object.entries(categoryKeywords).forEach(([category, keywords]) => {
+            if (keywords.some(keyword => name.includes(keyword))) {
+                categories.push(category);
+            }
+        });
+
+        if (categories.length === 0) {
+            if (name.includes('laboratory') || name.includes('lab')) {
+                categories.push('Laboratory');
+            } else if (name.includes('seminar')) {
+                categories.push('Seminar');
+            } else if (name.includes('project')) {
+                categories.push('Project');
+            } else if (name.includes('practical')) {
+                categories.push('Practical');
+            } else {
+                categories.push('General Engineering');
+            }
+        }
+
+        return categories;
+    }
+
+    toggleAvailability(button, availabilityList) {
+        const container = button.parentElement;
+        const textElement = container.querySelector('.availability-text');
+        const icon = button.querySelector('i');
+        
+        if (textElement.dataset.expanded === 'true') {
+            const maxVisible = 2;
+            const visibleItems = availabilityList.slice(0, maxVisible);
+            const hiddenItems = availabilityList.slice(maxVisible);
+            
+            let display = visibleItems.join('<br>');
+            if (hiddenItems.length > 0) {
+                display += `<br><em>(+${hiddenItems.length} more)</em>`;
+            }
+            
+            textElement.innerHTML = display;
+            textElement.dataset.expanded = 'false';
+            icon.className = 'fas fa-chevron-down';
+        } else {
+            textElement.innerHTML = availabilityList.join('<br>');
+            textElement.dataset.expanded = 'true';
+            icon.className = 'fas fa-chevron-up';
+        }
+    }
+}
+
+// Modal Component
+class ModalComponent {
+    constructor(courseCatalog) {
+        this.courseCatalog = courseCatalog;
+    }
+
+    show(pdfLink, courseName) {
+        const modal = document.querySelector(CONSTANTS.SELECTORS.PDF_MODAL);
+        const pdfViewer = document.querySelector(CONSTANTS.SELECTORS.PDF_VIEWER);
+        const pdfTitle = document.querySelector(CONSTANTS.SELECTORS.PDF_TITLE);
+        
+        if (!modal || !pdfViewer || !pdfTitle) return;
+
+        pdfTitle.textContent = courseName;
+        
+        const timestamp = new Date().getTime();
+        let url = `./study_programs/mechatronics_master/${pdfLink}`;
+        
+        if (url.includes('#')) {
+            const [baseUrl, anchor] = url.split('#');
+            const separator = baseUrl.includes('?') ? '&' : '?';
+            url = `${baseUrl}${separator}t=${timestamp}#${anchor}`;
+        } else {
+            const separator = url.includes('?') ? '&' : '?';
+            url = `${url}${separator}t=${timestamp}`;
+        }
+        
+        pdfViewer.src = url;
+        modal.style.display = 'block';
+    }
+}
+
+// Main Course Catalog Class
+class CourseCatalog {
+    constructor() {
+        this.courses = [];
+        this.filteredCourses = [];
+        
+        // Initialize components
+        this.dataLoader = new DataLoader();
+        this.searchComponent = new SearchComponent(this);
+        this.filterComponent = new FilterComponent(this);
+        this.courseGrid = new CourseGrid(this);
+        this.modalComponent = new ModalComponent(this);
+        
+        this.init();
+    }
+
+    async init() {
+        try {
+            await this.loadCourses();
+            this.setupEventListeners();
+            this.filterComponent.populateFilters();
+            this.filterComponent.setDefaultFilters();
+            this.renderCourses();
+        } catch (error) {
+            console.error('Error initializing course catalog:', error);
+            Utils.showError('Failed to load courses. Please refresh the page.');
+        }
+    }
+
+    async loadCourses() {
+        try {
+            this.courses = await this.dataLoader.loadCourses();
+            this.filteredCourses = [...this.courses];
+            this.filterComponent.extractFilterOptions(this.courses);
+            console.log(`Loaded ${this.courses.length} courses`);
+        } catch (error) {
+            console.error('Error loading courses:', error);
+            throw error;
+        }
+    }
+
+    setupEventListeners() {
+        // Search input
+        const searchInput = document.querySelector(CONSTANTS.SELECTORS.SEARCH_INPUT);
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.searchComponent.debouncedSearch(e.target.value);
+            });
+        }
+
+        // Filter dropdowns
+        const categoryFilter = document.querySelector(CONSTANTS.SELECTORS.CATEGORY_FILTER);
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', () => {
+                this.handleFilter();
+            });
+        }
+
+        const fosFilter = document.querySelector(CONSTANTS.SELECTORS.FOS_FILTER);
+        if (fosFilter) {
+            fosFilter.addEventListener('change', () => {
+                this.handleFilter();
+            });
+        }
+
+        // Checkbox event listeners
+        document.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox' && e.target.dataset.type) {
+                this.updateToggleAllButton(e.target.dataset.type);
+                this.handleFilter();
+            }
+        });
+
+        // PDF modal
+        const modal = document.querySelector(CONSTANTS.SELECTORS.PDF_MODAL);
+        const closeBtn = document.querySelector(CONSTANTS.SELECTORS.CLOSE_PDF_MODAL);
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                if (modal) modal.style.display = 'none';
+            });
+        }
+
+        if (modal) {
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    }
+
+    handleFilter() {
+        const searchTerm = this.searchComponent.getSearchTerm();
+        
+        this.filteredCourses = this.courses.filter(course => {
+            return this.filterComponent.matchesFilters(course, searchTerm);
+        });
+
+        this.renderCourses();
+        this.updateDynamicCounts();
+    }
+
+    renderCourses() {
+        this.courseGrid.render(this.filteredCourses);
+    }
+
+    updateDynamicCounts() {
+        this.updateCategoryCounts();
+        this.updateFosCategoryCounts();
+        this.updateGeneralCounts();
+    }
+
+    updateCategoryCounts() {
+        const categoryFilter = document.querySelector(CONSTANTS.SELECTORS.CATEGORY_FILTER);
+        if (!categoryFilter) return;
+
+        const categoryCounts = {};
+        this.filteredCourses.forEach(course => {
+            let courseCategories;
+            if (course.categories && Array.isArray(course.categories)) {
+                courseCategories = course.categories;
+            } else {
+                courseCategories = this.filterComponent.extractCategories(course.Name);
+            }
+            
+            courseCategories.forEach(category => {
+                categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+            });
+        });
+        
+        const currentValue = categoryFilter.value;
+        const allOption = categoryFilter.querySelector('option[value=""]');
+        categoryFilter.innerHTML = '';
+        if (allOption) {
+            categoryFilter.appendChild(allOption);
+        }
+        
+        const sortedCategories = Object.entries(categoryCounts)
+            .sort((a, b) => {
+                if (b[1] !== a[1]) return b[1] - a[1];
+                return a[0].localeCompare(b[0]);
+            });
+        
+        sortedCategories.forEach(([category, count]) => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = `${category} (${count})`;
+            categoryFilter.appendChild(option);
+        });
+        
+        categoryFilter.value = currentValue;
+    }
+
+    updateFosCategoryCounts() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][data-type="fosCategory"]');
+        const fosFilter = document.querySelector(CONSTANTS.SELECTORS.FOS_FILTER);
+        
+        checkboxes.forEach(checkbox => {
+            const category = checkbox.value;
+            let count = 0;
+            
+            this.filteredCourses.forEach(course => {
+                if (Array.isArray(course['Available in'])) {
+                    const hasCategory = course['Available in'].some(avail => {
+                        const fosMatches = !fosFilter?.value || (avail.FoS && avail.FoS === fosFilter.value);
+                        const categoryMatches = avail.subtype && avail.subtype.includes(category);
+                        return fosMatches && categoryMatches;
+                    });
+                    
+                    if (hasCategory) {
+                        count++;
+                    }
+                }
+            });
+            
+            const countElement = checkbox.parentElement.querySelector('.count');
+            if (countElement) {
+                countElement.textContent = count;
+            }
+        });
+    }
+
+    updateGeneralCounts() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][data-type="general"]');
+        
+        checkboxes.forEach(checkbox => {
+            const category = checkbox.value;
+            let count = 0;
+            
+            this.filteredCourses.forEach(course => {
+                let matches = false;
+                
+                if (category.includes('Master\'s Thesis') && course.Name === 'Master\'s Thesis') {
+                    matches = true;
+                } else if (category.includes('Interdisciplinary Qualifications') && course.Name === 'Interdisciplinary Qualifications') {
+                    matches = true;
+                } else if (category.includes('Elective Area') && Array.isArray(course['Available in'])) {
+                    matches = course['Available in'].some(avail => 
+                        avail.FoS && avail.FoS.includes('Elective Area')
+                    );
+                }
+                
+                if (matches) {
+                    count++;
+                }
+            });
+            
+            const countElement = checkbox.parentElement.querySelector('.count');
+            if (countElement) {
+                countElement.textContent = count;
+            }
+        });
+    }
+
+    toggleAll(type) {
+        const checkboxes = document.querySelectorAll(`input[type="checkbox"][data-type="${type}"]`);
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allChecked;
+        });
+        
+        const button = event.target.closest('.toggle-all-btn');
+        const icon = button.querySelector('i');
+        if (allChecked) {
+            icon.className = 'fas fa-square';
+        } else {
+            icon.className = 'fas fa-check-square';
+        }
+        
+        this.handleFilter();
+    }
+
+    updateToggleAllButton(type) {
+        const checkboxes = document.querySelectorAll(`input[type="checkbox"][data-type="${type}"]`);
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+        const noneChecked = Array.from(checkboxes).every(checkbox => !checkbox.checked);
+        
+        const toggleButton = document.querySelector(`button[onclick*="toggleAll('${type}')"]`);
+        if (toggleButton) {
+            const icon = toggleButton.querySelector('i');
+            if (allChecked) {
+                icon.className = 'fas fa-check-square';
+            } else if (noneChecked) {
+                icon.className = 'fas fa-square';
+            } else {
+                icon.className = 'fas fa-minus-square';
+            }
+        }
+    }
+
+    viewPDF(pdfLink, courseName) {
+        this.modalComponent.show(pdfLink, courseName);
+    }
+
+    toggleAvailability(button, availabilityList) {
+        this.courseGrid.toggleAvailability(button, availabilityList);
+    }
+}
+
+// Initialize the application when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.courseCatalog = new CourseCatalog();
+});
