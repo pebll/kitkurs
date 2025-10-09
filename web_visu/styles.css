@@ -91,7 +91,7 @@ body {
 /* Filters */
 .filters {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     align-items: start;
 }
@@ -99,6 +99,11 @@ body {
 .filter-group {
     display: flex;
     flex-direction: column;
+}
+
+/* Make Course Types take full width */
+.filter-group.availability-filter-group {
+    grid-column: 1 / -1;
 }
 
 .filter-group label {
