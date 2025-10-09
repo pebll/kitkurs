@@ -14,10 +14,28 @@ body {
     font-family: var(--font-family);
     line-height: 1.6;
     color: var(--text-primary);
-    background: var(--primary-gradient);
+    background: var(--dark-gradient);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    position: relative;
+}
+
+/* Dark Mode Background Pattern */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(0, 56, 101, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 150, 130, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(227, 114, 34, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 60% 60%, rgba(74, 144, 226, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
 }
 
 /* Remove default button styles */

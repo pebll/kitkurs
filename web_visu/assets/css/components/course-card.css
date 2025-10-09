@@ -1,13 +1,16 @@
-/* Course Card Component */
+/* Course Card Component - KIT Styling */
 .course-card {
-    background: var(--bg-primary);
-    border-radius: var(--border-radius);
-    padding: var(--spacing-lg);
-    box-shadow: var(--shadow-md);
+    background: var(--card-gradient);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.3),
+        0 4px 12px rgba(0, 56, 101, 0.1);
     transition: all var(--transition-normal);
-    border: 1px solid #f0f0f0;
+    border: 1px solid var(--dark-border);
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(10px);
 }
 
 .course-card::before {
@@ -17,12 +20,16 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: var(--primary-gradient);
+    background: var(--secondary-gradient);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
 }
 
 .course-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-8px);
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.4),
+        0 12px 30px rgba(0, 150, 130, 0.15);
+    border-color: var(--kit-green);
 }
 
 .course-title {
@@ -46,9 +53,14 @@
 
 .detail-item i {
     margin-right: var(--spacing-sm);
-    color: var(--primary-color);
+    color: var(--kit-blue);
     width: 16px;
     text-align: center;
+    transition: color var(--transition-normal);
+}
+
+.course-card:hover .detail-item i {
+    color: var(--kit-green);
 }
 
 .detail-label {
@@ -111,14 +123,22 @@
 }
 
 .category-tag {
-    background: var(--primary-color);
+    background: var(--kit-light-blue);
     color: var(--text-white);
     padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: 15px;
+    border-radius: 20px;
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    transition: all var(--transition-normal);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+}
+
+.category-tag:hover {
+    background: var(--kit-green);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 150, 130, 0.4);
 }
 
 .view-pdf-btn {
@@ -136,29 +156,66 @@
     align-items: center;
     justify-content: center;
     gap: var(--spacing-sm);
+    box-shadow: 0 4px 15px rgba(0, 56, 101, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.view-pdf-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
 }
 
 .view-pdf-btn:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 
+        0 8px 25px rgba(0, 56, 101, 0.4),
+        0 4px 15px rgba(0, 150, 130, 0.3);
+}
+
+.view-pdf-btn:hover::before {
+    left: 100%;
 }
 
 .view-pdf-btn i {
     font-size: var(--font-size-lg);
 }
 
-/* Results Info */
+/* Results Info - KIT Styling */
 .results-info {
-    background: var(--primary-gradient);
+    background: var(--header-gradient);
     padding: var(--spacing-lg) var(--spacing-xl);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-lg);
     margin-bottom: var(--spacing-lg);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 
+        0 8px 25px rgba(0, 56, 101, 0.15),
+        0 4px 12px rgba(0, 0, 0, 0.1);
     font-weight: var(--font-weight-bold);
     color: var(--text-white);
     text-align: center;
     font-size: var(--font-size-xl);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.results-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(227, 114, 34, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(0, 150, 130, 0.1) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 /* No Results */

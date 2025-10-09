@@ -1,11 +1,23 @@
-/* Override styles to work with existing functionality */
+/* Override styles to work with existing functionality - KIT Dark Mode */
 
 /* Ensure the new CSS variables work with existing styles */
 :root {
-    /* Override any conflicting styles from the existing styles.css */
-    --existing-primary: #667eea;
-    --existing-secondary: #764ba2;
-    --existing-accent: #ffd700;
+    /* KIT Brand Colors */
+    --kit-blue: #003865;
+    --kit-green: #009682;
+    --kit-orange: #E37222;
+    --kit-light-blue: #4A90E2;
+    --kit-dark-gray: #2C3E50;
+    --kit-light-gray: #F5F5F5;
+    --kit-white: #FFFFFF;
+    
+    /* Dark Mode Overrides */
+    --dark-bg-primary: #0A0E1A;
+    --dark-bg-secondary: #1A1F2E;
+    --dark-bg-tertiary: #252B3D;
+    --dark-bg-card: #1E2432;
+    --dark-border: #2A3142;
+    --dark-border-light: #3A4152;
 }
 
 /* Make sure the new modular CSS doesn't conflict with existing styles */
@@ -13,100 +25,260 @@
     /* Ensure container styles from existing CSS take precedence */
 }
 
+/* Dark Mode Checkbox Overrides */
+.checkbox-container {
+    background: var(--dark-bg-tertiary) !important;
+    border-color: var(--dark-border) !important;
+    border-radius: var(--border-radius) !important;
+    padding: var(--spacing-sm) !important;
+}
+
+.checkbox-item {
+    color: var(--text-primary) !important;
+    padding: 5px 0 5px var(--spacing-md) !important;
+}
+
+.checkbox-item:hover {
+    background-color: var(--kit-light-blue) !important;
+    color: var(--text-white) !important;
+}
+
+.checkbox-item input[type="checkbox"] {
+    accent-color: var(--kit-light-blue) !important;
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer !important;
+    transition: all var(--transition-normal) !important;
+}
+
+
+.checkbox-item label {
+    color: var(--text-primary) !important;
+    font-weight: normal !important;
+    text-transform: none !important;
+}
+
+.checkbox-item:hover label {
+    color: var(--text-white) !important;
+}
+
+.checkbox-item .count {
+    background: var(--dark-border) !important;
+    color: var(--text-light) !important;
+}
+
+.checkbox-item:hover .count {
+    background: var(--kit-green) !important;
+    color: var(--text-white) !important;
+    border-color: var(--kit-green) !important;
+}
+
+/* Dark Mode Scrollbar */
+.checkbox-container::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+.checkbox-container::-webkit-scrollbar-track {
+    background: var(--dark-bg-secondary) !important;
+    border-radius: 4px !important;
+}
+
+.checkbox-container::-webkit-scrollbar-thumb {
+    background: var(--dark-border-light) !important;
+    border-radius: 4px !important;
+    transition: background var(--transition-normal) !important;
+}
+
+.checkbox-container::-webkit-scrollbar-thumb:hover {
+    background: var(--kit-light-blue) !important;
+}
+
+
+.checkbox-item input[type="checkbox"]:checked {
+    accent-color: var(--kit-green) !important;
+}
+
+.checkbox-item:has(input[type="checkbox"]:checked) {
+    background-color: rgba(0, 150, 130, 0.1) !important;
+    border-left: 3px solid var(--kit-green) !important;
+}
+
+.checkbox-item:has(input[type="checkbox"]:checked) .count {
+    background: var(--kit-green) !important;
+    color: var(--text-white) !important;
+    border-color: var(--kit-green) !important;
+}
+
+/* Focus states for accessibility */
+.checkbox-item:focus-within {
+    outline: 2px solid var(--kit-orange) !important;
+    outline-offset: 2px !important;
+}
+
+/* Improved spacing and layout */
+.checkbox-container {
+    gap: 4px !important;
+}
+
+.checkbox-item {
+    margin-bottom: 2px !important;
+}
+
+
+
+/* Dark Mode Additional Enhancements */
+.no-results {
+    color: var(--text-secondary) !important;
+}
+
+/* Dark Mode Toggle Button Styles */
+.toggle-btn {
+    background: var(--dark-bg-card) !important;
+    border-color: var(--dark-border) !important;
+    color: var(--text-primary) !important;
+}
+
+.toggle-btn:hover {
+    background: var(--kit-light-blue) !important;
+    color: var(--text-white) !important;
+}
+
+.toggle-btn.active {
+    background: var(--kit-green) !important;
+    color: var(--text-white) !important;
+}
+
+/* Dark Mode Unchecked Checkboxes */
+.checkbox-item input[type="checkbox"] {
+    accent-color: var(--kit-light-blue) !important;
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer !important;
+    transition: all var(--transition-normal) !important;
+}
+
+/* Dark Mode Section Headers */
+.section-header h3 {
+    color: var(--text-primary) !important;
+}
+
+/* Dark Mode Results Info */
+.results-info {
+    background: var(--header-gradient) !important;
+    color: var(--text-white) !important;
+}
+
+/* Dark Mode Course Type Sections */
+.fos-categories-section, .general-section, .fos-section, .subtype-section {
+    background: var(--dark-bg-card) !important;
+    border-color: var(--dark-border) !important;
+    color: var(--text-primary) !important;
+}
+
+.fos-categories-section h4, .general-section h4, .fos-section h4, .subtype-section h4 {
+    color: var(--text-primary) !important;
+}
+
+/* Dark Mode Section Headers */
+.section-header {
+    border-bottom-color: var(--dark-border) !important;
+}
+
+.section-header h3 {
+    color: var(--text-primary) !important;
+}
+
+/* Dark Mode Toggle Buttons in Sections */
+.section-header .toggle-btn {
+    background: var(--dark-bg-tertiary) !important;
+    border-color: var(--dark-border) !important;
+    color: var(--text-primary) !important;
+}
+
+.section-header .toggle-btn:hover {
+    background: var(--kit-light-blue) !important;
+    color: var(--text-white) !important;
+}
+
+.section-header .toggle-btn.active {
+    background: var(--kit-green) !important;
+    color: var(--text-white) !important;
+}
+
+/* Dark Mode Availability Filters */
+.availability-filters {
+    background: var(--dark-bg-secondary) !important;
+    border-color: var(--dark-border) !important;
+}
+
+.availability-filter-group {
+    color: var(--text-primary) !important;
+}
+
+.availability-filter-group label {
+    color: var(--text-primary) !important;
+}
+
+/* Dark Mode Filter Groups */
+.filter-group {
+    color: var(--text-primary) !important;
+}
+
+.filter-group label {
+    color: var(--text-primary) !important;
+}
+
+/* Dark Mode Additional Elements */
+.no-results {
+    background: var(--dark-bg-card) !important;
+    color: var(--text-primary) !important;
+}
+
+.no-results h3 {
+    color: var(--text-secondary) !important;
+}
+
+.detail-value {
+    color: var(--text-secondary) !important;
+}
+
+/* Dark Mode Modal Content */
+.modal-content {
+    background-color: var(--dark-bg-card) !important;
+}
+
+/* Dark Mode Search Icon */
+.search-box i {
+    color: var(--kit-light-blue) !important;
+}
+
+/* Dark Mode Additional Text Elements */
+.course-details {
+    color: var(--text-primary) !important;
+}
+
+.course-details .detail-label {
+    color: var(--text-secondary) !important;
+}
+
+/* Dark Mode Loading States */
+.loading {
+    color: var(--text-primary) !important;
+}
+
+/* Dark Mode Error States */
+.error {
+    color: var(--error-color) !important;
+    background: var(--dark-bg-card) !important;
+}
+
+/* Dark Mode Success States */
+.success {
+    color: var(--success-color) !important;
+    background: var(--dark-bg-card) !important;
+}
+
 /* Ensure existing functionality still works */
 .course-card {
     /* Keep existing course card styles */
-}
-
-/* Study program selector improvements */
-.study-program-selector {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
-    padding: 25px;
-    margin-bottom: 25px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    border: none;
-    position: relative;
-    overflow: hidden;
-}
-
-.study-program-selector::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-    pointer-events: none;
-}
-
-.study-program-group {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    position: relative;
-    z-index: 1;
-}
-
-.study-program-group label {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.study-program-group label i {
-    color: #ffd700;
-    font-size: 1.5rem;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-}
-
-.study-program-group select {
-    font-size: 1.3rem;
-    padding: 15px 25px;
-    border: none;
-    border-radius: 15px;
-    background: white;
-    color: #333;
-    min-width: 300px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    font-weight: 600;
-}
-
-.study-program-group select:focus {
-    outline: none;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-}
-
-.study-program-group select:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-}
-
-/* Current program display */
-.current-program {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 25px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: white;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.current-program i {
-    color: #ffd700;
 }

@@ -1,4 +1,4 @@
-/* Responsive Design */
+/* Responsive Design - KIT Styling */
 
 /* Tablet */
 @media (max-width: 768px) {
@@ -10,8 +10,13 @@
         font-size: var(--font-size-3xl);
     }
     
+    .header::before {
+        width: 80px;
+    }
+    
     .controls {
         padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
     }
     
     .filters {
@@ -39,12 +44,8 @@
         padding: var(--spacing-md);
     }
     
-    .fos-section, .subtype-section, .general-section {
-        padding: var(--spacing-md);
-    }
-    
     .checkbox-container {
-        max-height: 150px;
+        max-height: 200px;
     }
 }
 
@@ -58,6 +59,10 @@
         font-size: var(--font-size-base);
     }
     
+    .header::before {
+        width: 60px;
+    }
+    
     .search-box input {
         padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 45px;
         font-size: var(--font-size-base);
@@ -67,12 +72,12 @@
         font-size: var(--font-size-lg);
     }
     
-    .study-program-group {
-        flex-direction: column;
-        gap: var(--spacing-md);
+    .course-card {
+        padding: var(--spacing-md);
     }
     
-    .study-program-group select {
-        min-width: 250px;
+    .view-pdf-btn {
+        font-size: var(--font-size-sm);
+        padding: var(--spacing-sm) var(--spacing-md);
     }
 }

@@ -1,25 +1,46 @@
-/* Header Styles */
+/* Header Styles - KIT Branding */
 .header {
     text-align: center;
     margin-bottom: var(--spacing-xxl);
     color: var(--text-white);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    position: relative;
+    padding: var(--spacing-xl) 0;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: var(--kit-orange);
+    border-radius: 2px;
 }
 
 .header h1 {
     font-size: var(--font-size-4xl);
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
     font-weight: var(--font-weight-bold);
+    letter-spacing: -0.02em;
+    position: relative;
 }
 
 .header h1 i {
     margin-right: var(--spacing-md);
-    color: var(--accent-color);
+    color: var(--kit-orange);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 .header p {
     font-size: var(--font-size-xl);
-    opacity: 0.9;
+    opacity: 0.95;
+    font-weight: var(--font-weight-medium);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
 }
 
 .current-program {
