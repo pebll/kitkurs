@@ -192,10 +192,6 @@ class CourseCatalog {
             }
         });
 
-        // Clear filters button
-        document.getElementById('clearFilters').addEventListener('click', () => {
-            this.clearFilters();
-        });
 
         // PDF modal
         const modal = document.getElementById('pdfModal');
@@ -640,21 +636,6 @@ class CourseCatalog {
         return Array.from(checkboxes).map(cb => cb.value);
     }
 
-    clearFilters() {
-        document.getElementById('searchInput').value = '';
-        document.getElementById('categoryFilter').value = '';
-        document.getElementById('fosFilter').value = '';
-        
-        // Clear all checkboxes
-        document.querySelectorAll('input[type="checkbox"][data-type]').forEach(checkbox => {
-            checkbox.checked = false;
-        });
-        
-        this.searchTerm = '';
-        this.filteredCourses = [...this.courses];
-        this.renderCourses();
-        this.updateDynamicCounts();
-    }
 
     renderCourses() {
         const coursesGrid = document.getElementById('coursesGrid');
