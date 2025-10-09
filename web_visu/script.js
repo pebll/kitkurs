@@ -26,31 +26,18 @@ class CourseCatalog {
 
     async loadCourses() {
         try {
-            // Try to load the new format first
-            const response = await fetch('./courses_v2_with_categories.json');
+            // Load courses from the mechatronics master program
+            const response = await fetch('./study_programs/mechatronics_master/courses.json');
             if (!response.ok) {
-                throw new Error('Failed to fetch courses v2');
+                throw new Error('Failed to fetch courses from mechatronics master');
             }
             this.courses = await response.json();
             this.filteredCourses = [...this.courses];
             this.extractFilterOptions();
-            console.log('Loaded courses_v2_with_categories.json');
+            console.log('Loaded courses from mechatronics master');
         } catch (error) {
-            console.error('Error loading courses v2:', error);
-            // Fallback: try to load the original format
-            try {
-                const response = await fetch('./courses_v1.json');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch courses v1');
-                }
-                this.courses = await response.json();
-                this.filteredCourses = [...this.courses];
-                this.extractFilterOptions();
-                console.log('Loaded courses_v1.json as fallback');
-            } catch (fallbackError) {
-                console.error('Fallback also failed:', fallbackError);
-                throw error;
-            }
+            console.error('Error loading courses:', error);
+            throw error;
         }
     }
 
@@ -773,7 +760,7 @@ class CourseCatalog {
         // Force iframe to reload by adding a timestamp parameter
         // But preserve the page anchor (#page=XX) by adding timestamp before the anchor
         const timestamp = new Date().getTime();
-        let url = `./${pdfLink}`;
+        let url = `./study_programs/mechatronics_master/${pdfLink}`;
         
         if (url.includes('#')) {
             // If there's a page anchor, add timestamp before it
