@@ -15,7 +15,8 @@
     ],
     "categories": [
       "Optics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Advanced Artificial Intelligence",
@@ -53,7 +54,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Advanced Communications Engineering",
@@ -67,7 +69,8 @@
     ],
     "categories": [
       "Communication"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Analog Circuit Design",
@@ -85,7 +88,8 @@
     ],
     "categories": [
       "Electronics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Analysis Tools for Combustion Diagnostics",
@@ -107,7 +111,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Antennas and Beamforming",
@@ -121,7 +126,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Applied Information Theory",
@@ -135,7 +141,8 @@
     ],
     "categories": [
       "Communication"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Artificial Intelligence & IT-Security",
@@ -149,7 +156,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Automated Visual Inspection and Image Processing",
@@ -167,7 +175,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Automotive Engineering I",
@@ -189,7 +198,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Automotive Engineering II",
@@ -207,7 +217,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Automotive Vision",
@@ -241,7 +252,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Basics of Converter Control",
@@ -259,7 +271,8 @@
     ],
     "categories": [
       "Control Systems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Basics of Technical Logistics II",
@@ -273,7 +286,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Batteries and Fuel Cells Laboratory",
@@ -296,7 +310,8 @@
     "categories": [
       "Energy",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Batteries, Fuel Cells, and Electrolysis",
@@ -330,7 +345,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Battery and Fuel Cells Systems",
@@ -348,7 +364,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Bioelectric Signals",
@@ -362,7 +379,8 @@
     ],
     "categories": [
       "Biomedical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Biologically Inspired Robots",
@@ -393,7 +411,8 @@
     "categories": [
       "Robotics",
       "Biomedical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Biomechanics: Design in Nature and Inspired by Nature",
@@ -408,7 +427,8 @@
     "categories": [
       "Biomedical",
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "BioMEMS - Microsystems Technologies for Life Sciences and Medicine I",
@@ -431,7 +451,8 @@
     "categories": [
       "Biomedical",
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "BioMEMS - Microsystems Technologies for Life Sciences and Medicine II",
@@ -450,7 +471,8 @@
     "categories": [
       "Biomedical",
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "BioMEMS - Microsystems Technologies for Life Sciences and Medicine III",
@@ -469,7 +491,8 @@
     "categories": [
       "Biomedical",
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "BioMEMS - Microsystemtechnolgy for Life-Science and Medicine IV",
@@ -488,7 +511,8 @@
     "categories": [
       "Biomedical",
       "Microsystems"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "CAD Engineering Project for Intelligent Systems",
@@ -510,7 +534,8 @@
     ],
     "categories": [
       "Project"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "CAE-Workshop",
@@ -528,7 +553,8 @@
     ],
     "categories": [
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Channel Coding: Algebraic Methods for Communications and Storage",
@@ -543,7 +569,8 @@
     "categories": [
       "Artificial Intelligence",
       "Communication"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "CO2-Neutral Combustion Engines and their Fuels I",
@@ -569,7 +596,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "CO2-Neutral Combustion Engines and their Fuels II",
@@ -587,7 +615,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Cognitive Automobiles - Laboratory",
@@ -611,7 +640,8 @@
       "Artificial Intelligence",
       "Automotive",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Combined Cycle Power Plants",
@@ -629,7 +659,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Communication Systems and Protocols",
@@ -659,7 +690,8 @@
     ],
     "categories": [
       "Communication"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Communications Engineering Lab",
@@ -674,7 +706,8 @@
     "categories": [
       "Communication",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Components of Power Systems",
@@ -692,7 +725,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Computational Fluid Dynamics (CFD) for Energy Technologies",
@@ -711,7 +745,8 @@
     "categories": [
       "Energy",
       "Mechanical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Computational Intelligence",
@@ -757,7 +792,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Control of Mobile Machines",
@@ -796,7 +832,8 @@
     "categories": [
       "Control Systems",
       "Mechanical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Control of Power-Electronic Systems",
@@ -823,7 +860,8 @@
     "categories": [
       "Energy",
       "Control Systems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Control Technology",
@@ -841,7 +879,8 @@
     ],
     "categories": [
       "Control Systems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Current Topics on BioMEMS",
@@ -860,7 +899,8 @@
     "categories": [
       "Biomedical",
       "Microsystems"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Cyber-Physical Modeling",
@@ -906,7 +946,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Data Analytics for Engineers",
@@ -934,7 +975,8 @@
       "Artificial Intelligence",
       "Communication",
       "Software"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Data-Driven Algorithms in Vehicle Technology",
@@ -962,7 +1004,8 @@
       "Automotive",
       "Communication",
       "Software"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Decision-Making and Motion Planning for Automated Driving",
@@ -989,7 +1032,8 @@
     "categories": [
       "Robotics",
       "Automotive"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Deep Learning and Neural Networks",
@@ -1007,7 +1051,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Deep Learning for Computer Vision I: Basics",
@@ -1029,7 +1074,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Deep Learning for Computer Vision II: Advanced Topics",
@@ -1047,7 +1093,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Deep Learning for Engineers",
@@ -1081,7 +1128,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Design and Development of Mobile Machines",
@@ -1099,7 +1147,8 @@
     ],
     "categories": [
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Design and Optimization of Conventional and Electrified Automotive Transmissions",
@@ -1117,7 +1166,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Design of Electrical Machines",
@@ -1143,7 +1193,8 @@
     ],
     "categories": [
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Design Thinking",
@@ -1157,7 +1208,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "Irregular"
   },
   {
     "Name": "Design with Plastics",
@@ -1171,7 +1223,8 @@
     ],
     "categories": [
       "Materials"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Development of Automated Production Systems",
@@ -1185,7 +1238,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Development of Hybrid Powertrains",
@@ -1205,7 +1259,8 @@
       "Artificial Intelligence",
       "Energy",
       "Automotive"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Development of Oil-Hydraulic Powertrain Systems",
@@ -1225,7 +1280,8 @@
       "Artificial Intelligence",
       "Energy",
       "Automotive"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Digital Beam-Forming for Imaging Radar",
@@ -1239,7 +1295,8 @@
     ],
     "categories": [
       "Electronics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Digital Circuit Design",
@@ -1257,7 +1314,8 @@
     ],
     "categories": [
       "Electronics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Digital Control",
@@ -1280,7 +1338,8 @@
     "categories": [
       "Electronics",
       "Control Systems"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Digital Hardware Design Laboratory",
@@ -1295,7 +1354,8 @@
     "categories": [
       "Electronics",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Digital Twin Engineering",
@@ -1321,7 +1381,8 @@
     ],
     "categories": [
       "Electronics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Digitalization of Products, Services & Production",
@@ -1336,7 +1397,8 @@
     "categories": [
       "Electronics",
       "Manufacturing"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Distributed Discrete Event Systems",
@@ -1370,7 +1432,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Drive System Engineering B: Stationary Machinery",
@@ -1392,7 +1455,8 @@
     ],
     "categories": [
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Drive Train of Mobile Machines",
@@ -1408,7 +1472,8 @@
       "Artificial Intelligence",
       "Automotive",
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Dynamics of Electro-Mechanical Systems",
@@ -1426,7 +1491,8 @@
     ],
     "categories": [
       "Mechanical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Dynamics of the Automotive Drive Train",
@@ -1446,7 +1512,8 @@
       "Artificial Intelligence",
       "Automotive",
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Electric Drives and Power Electronics Lab",
@@ -1470,7 +1537,8 @@
       "Energy",
       "Electronics",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Electric Drives for E-Mobility",
@@ -1492,7 +1560,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Electric Power Transmission & Grid Control",
@@ -1516,7 +1585,8 @@
       "Energy",
       "Automotive",
       "Control Systems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Electrical Energy Systems Lab",
@@ -1531,7 +1601,8 @@
     "categories": [
       "Energy",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Electrocatalysis",
@@ -1549,7 +1620,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Elements of Technical Logistics",
@@ -1563,7 +1635,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Elements of Technical Logistics incl. Project",
@@ -1578,7 +1651,8 @@
     "categories": [
       "Manufacturing",
       "Project"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Energy Informatics",
@@ -1592,7 +1666,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Energy Storage and Network Integration",
@@ -1610,7 +1685,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Energy Systems I - Renewable Energy",
@@ -1628,7 +1704,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Energy Topology and Resilience",
@@ -1646,7 +1723,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Engine Measurement Techniques",
@@ -1664,7 +1742,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Engineering High-Density Molecular Arrays: Tools, Techniques, and AI-Driven Solutions for Biomedical Diagnostics",
@@ -1683,7 +1762,8 @@
     "categories": [
       "Artificial Intelligence",
       "Biomedical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Engineering Materials for the Energy Transition",
@@ -1702,7 +1782,8 @@
     "categories": [
       "Energy",
       "Materials"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Fabrication Processes in Microsystem Technology",
@@ -1720,7 +1801,8 @@
     ],
     "categories": [
       "Microsystems"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Field Propagation and Coherence",
@@ -1734,7 +1816,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Flows and Heat Transfer in Energy Technology",
@@ -1752,7 +1835,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Fundamentals in the Development of Commercial Vehicles",
@@ -1770,7 +1854,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Fundamentals of Combustion I",
@@ -1792,7 +1877,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Fundamentals of Combustion II",
@@ -1810,7 +1896,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Fundamentals of Energy Technology",
@@ -1832,7 +1919,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Fundamentals of Reactor Safety for the Operation and Dismantling of Nuclear Power Plants",
@@ -1850,7 +1938,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Fusion Technology A",
@@ -1868,7 +1957,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Fusion Technology B",
@@ -1886,7 +1976,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Handling Characteristics of Motor Vehicles I",
@@ -1904,7 +1995,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Handling Characteristics of Motor Vehicles II",
@@ -1922,7 +2014,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Hardware Modeling and Simulation",
@@ -1944,7 +2037,8 @@
     ],
     "categories": [
       "Electronics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Hardware Synthesis and Optimization",
@@ -1959,7 +2053,8 @@
     "categories": [
       "Electronics",
       "Project"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Hardware/Software Co-Design",
@@ -1978,7 +2073,8 @@
     "categories": [
       "Electronics",
       "Software"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Heat and Mass Transfer",
@@ -1996,7 +2092,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Heat Pumps",
@@ -2014,7 +2111,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "High-Voltage Technology",
@@ -2032,7 +2130,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "High-Voltage Test Technique",
@@ -2046,7 +2145,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Holistic Approach of Managing Power Plant Operation under Uncertainty and Volatility",
@@ -2065,7 +2165,8 @@
     "categories": [
       "Artificial Intelligence",
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Hot Research Topics in AI for Engineering Applications",
@@ -2087,7 +2188,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Human Brain and Central Nervous System: Anatomy, Information Transfer, Signal Processing, Neurophysiology and Therapy",
@@ -2103,7 +2205,8 @@
       "Artificial Intelligence",
       "Biomedical",
       "Communication"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Human-Machine-Interaction in Anthropomatics: Basics",
@@ -2121,7 +2224,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Humanoid Robots - Seminar",
@@ -2141,7 +2245,8 @@
       "Robotics",
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Hydrogen and reFuels - Energy Conversion in Combustion Engines",
@@ -2159,7 +2264,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Industrial Circuitry",
@@ -2178,7 +2284,8 @@
     "categories": [
       "Electronics",
       "Manufacturing"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Industrial Mobile Robotics Lab",
@@ -2198,7 +2305,8 @@
       "Robotics",
       "Manufacturing",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Information Fusion",
@@ -2237,7 +2345,8 @@
     "categories": [
       "Energy",
       "Communication"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Information Systems and Supply Chain Management",
@@ -2253,7 +2362,8 @@
       "Artificial Intelligence",
       "Manufacturing",
       "Communication"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Information Systems in Power Engineering Lab",
@@ -2273,7 +2383,8 @@
       "Energy",
       "Communication",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Information Technology in Industrial Automation Systems",
@@ -2294,7 +2405,8 @@
       "Control Systems",
       "Manufacturing",
       "Communication"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Innovation and Project Management in Rail Vehicle Engineering",
@@ -2315,7 +2427,8 @@
       "Automotive",
       "Manufacturing",
       "Project"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Innovation2Business - Innovation Strategy in the Industrial Corporate Practice",
@@ -2333,7 +2446,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Innovative Concepts for Programming Industrial Robots",
@@ -2353,7 +2467,8 @@
       "Robotics",
       "Manufacturing",
       "Software"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Innovative Nuclear Systems",
@@ -2371,7 +2486,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Integrated Intelligent Sensors",
@@ -2389,7 +2505,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Integrated Photonics",
@@ -2403,7 +2520,8 @@
     ],
     "categories": [
       "Optics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Integrated Product Development",
@@ -2421,7 +2539,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Integrated Systems and Circuits",
@@ -2443,7 +2562,8 @@
     ],
     "categories": [
       "Electronics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Interdisciplinary Qualifications",
@@ -2452,7 +2572,8 @@
     "Available in": [],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "International Production Engineering",
@@ -2466,7 +2587,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Introduction into Energy Economics",
@@ -2488,7 +2610,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Introduction to Automotive and Industrial Lidar Technology",
@@ -2507,7 +2630,8 @@
     "categories": [
       "Automotive",
       "Manufacturing"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Introduction to Bionics",
@@ -2529,7 +2653,8 @@
     ],
     "categories": [
       "Biomedical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Introduction to Microsystem Technology I",
@@ -2551,7 +2676,8 @@
     ],
     "categories": [
       "Microsystems"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Introduction to Microsystem Technology II",
@@ -2573,7 +2699,8 @@
     ],
     "categories": [
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Introduction to Multi-Body Dynamics",
@@ -2587,7 +2714,8 @@
     ],
     "categories": [
       "Mechanical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Introduction to Nanotechnology",
@@ -2605,7 +2733,8 @@
     ],
     "categories": [
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Introduction to Nuclear Energy",
@@ -2627,7 +2756,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "IT/OT-Security Seminar",
@@ -2650,7 +2780,8 @@
     "categories": [
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "IT-Fundamentals of Logistics: Opportunities for Digital Transformation",
@@ -2669,7 +2800,8 @@
     "categories": [
       "Electronics",
       "Manufacturing"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Lab Course on Nanoelectronics",
@@ -2685,7 +2817,8 @@
       "Electronics",
       "Microsystems",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Laboratory Exercise in Energy Technology",
@@ -2700,7 +2833,8 @@
     "categories": [
       "Energy",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Laboratory FPGA Based Circuit Design",
@@ -2715,7 +2849,8 @@
     "categories": [
       "Electronics",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Laboratory in Software Engineering",
@@ -2734,7 +2869,8 @@
     "categories": [
       "Software",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Laboratory Mechatronics",
@@ -2756,7 +2892,8 @@
     ],
     "categories": [
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Laboratory Nanotechnology",
@@ -2775,7 +2912,8 @@
     "categories": [
       "Microsystems",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Laboratory Optoelectronics",
@@ -2790,7 +2928,8 @@
     "categories": [
       "Electronics",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Laboratory Solar Energy",
@@ -2809,7 +2948,8 @@
     "categories": [
       "Energy",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Leadership in Interdisciplinary Teams",
@@ -2835,7 +2975,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Liberalised Power Markets",
@@ -2853,7 +2994,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Lighting Engineering",
@@ -2867,7 +3009,8 @@
     ],
     "categories": [
       "Optics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Lightweight Engineering Design",
@@ -2885,7 +3028,8 @@
     ],
     "categories": [
       "Materials"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Localization of Mobile Agents",
@@ -2907,7 +3051,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Logistics and Supply Chain Management",
@@ -2926,7 +3071,8 @@
     "categories": [
       "Artificial Intelligence",
       "Manufacturing"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Machine Dynamics",
@@ -2944,7 +3090,8 @@
     ],
     "categories": [
       "Mechanical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Machine Learning - Basic Methods",
@@ -2958,7 +3105,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Machine Learning - Foundations and Algorithms",
@@ -2977,7 +3125,8 @@
     "categories": [
       "Artificial Intelligence",
       "Software"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Machine Learning 1",
@@ -2991,7 +3140,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Machine Learning 2",
@@ -3005,7 +3155,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Machine Learning and Optimization in Energy Systems",
@@ -3020,7 +3171,8 @@
     "categories": [
       "Artificial Intelligence",
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Machine Learning for Robotic Systems 1",
@@ -3055,7 +3207,8 @@
     "categories": [
       "Artificial Intelligence",
       "Robotics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Machine Learning for Robotic Systems 2",
@@ -3082,7 +3235,8 @@
     "categories": [
       "Artificial Intelligence",
       "Robotics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Machine Learning for Robotics",
@@ -3105,7 +3259,8 @@
     "categories": [
       "Artificial Intelligence",
       "Robotics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Machine Tools and Industrial Handling",
@@ -3128,7 +3283,8 @@
     "categories": [
       "Manufacturing",
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Machine Vision",
@@ -3162,7 +3318,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Magnet Technology of Fusion Reactors",
@@ -3180,7 +3337,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Master's Thesis",
@@ -3189,7 +3347,8 @@
     "Available in": [],
     "categories": [
       "Project"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Materials for Lightweight Construction",
@@ -3203,7 +3362,8 @@
     ],
     "categories": [
       "Materials"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Materials Recycling and Sustainability",
@@ -3222,7 +3382,8 @@
     "categories": [
       "Artificial Intelligence",
       "Materials"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Mathematical Methods in Fluid Mechanics",
@@ -3248,7 +3409,8 @@
     ],
     "categories": [
       "Mechanical"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Mathematical Methods in Hydraulics",
@@ -3266,7 +3428,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Mechanical Properties of Nanomaterials and Microsystems",
@@ -3286,7 +3449,8 @@
       "Materials",
       "Mechanical",
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Mechatronic Measurement Systems Lab",
@@ -3300,7 +3464,8 @@
     ],
     "categories": [
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Medical Image Processing for Guidance and Navigation",
@@ -3314,7 +3479,8 @@
     ],
     "categories": [
       "Biomedical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Micro System Simulation",
@@ -3332,7 +3498,8 @@
     ],
     "categories": [
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Microactuators",
@@ -3358,7 +3525,8 @@
     ],
     "categories": [
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Microenergy Technologies",
@@ -3381,7 +3549,8 @@
     "categories": [
       "Energy",
       "Microsystems"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Microsystem Product Design for Young Entrepreneurs",
@@ -3395,7 +3564,8 @@
     ],
     "categories": [
       "Microsystems"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Microsystem Technology",
@@ -3413,7 +3583,8 @@
     ],
     "categories": [
       "Microsystems"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Microwave Engineering Lab",
@@ -3429,7 +3600,8 @@
       "Electronics",
       "Microsystems",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Microwaves Measurement Techniques",
@@ -3444,7 +3616,8 @@
     "categories": [
       "Electronics",
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Miniaturized Heat Transfer",
@@ -3462,7 +3635,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "MMIC Design Laboratory",
@@ -3481,7 +3655,8 @@
     "categories": [
       "Electronics",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Mobile Machines",
@@ -3511,7 +3686,8 @@
     ],
     "categories": [
       "Mechanical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Modeling Physiological Systems",
@@ -3525,7 +3701,8 @@
     ],
     "categories": [
       "Biomedical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Modern Control Concepts I",
@@ -3539,7 +3716,8 @@
     ],
     "categories": [
       "Control Systems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Modern Control Concepts II",
@@ -3557,7 +3735,8 @@
     ],
     "categories": [
       "Control Systems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Modern Control Concepts III",
@@ -3579,7 +3758,8 @@
     ],
     "categories": [
       "Control Systems"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Modern Radio Systems Engineering",
@@ -3593,7 +3773,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Modern VLSI Technologies",
@@ -3611,7 +3792,8 @@
     ],
     "categories": [
       "Electronics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Motion in Human and Machine - Seminar",
@@ -3630,7 +3812,8 @@
     "categories": [
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Motor Vehicle Laboratory",
@@ -3649,7 +3832,8 @@
     "categories": [
       "Automotive",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Multivariable Control Systems",
@@ -3703,7 +3887,8 @@
     ],
     "categories": [
       "Control Systems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Nano- and Quantum Electronics",
@@ -3723,7 +3908,8 @@
       "Electronics",
       "Microsystems",
       "Quantum"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "NMR Micro Probe Hardware Conception and Construction",
@@ -3738,7 +3924,8 @@
     "categories": [
       "Electronics",
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Nonlinear Control Systems",
@@ -3760,7 +3947,8 @@
     ],
     "categories": [
       "Control Systems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Nonlinear Optics",
@@ -3774,7 +3962,8 @@
     ],
     "categories": [
       "Optics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Novel Actuators and Sensors",
@@ -3800,7 +3989,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Nuclear Power and Reactor Technology",
@@ -3818,7 +4008,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Nuclear Power Plant Technology",
@@ -3836,7 +4027,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Numerical Fluid Mechanics",
@@ -3862,7 +4054,8 @@
     ],
     "categories": [
       "Mechanical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Numerical Methods",
@@ -3924,7 +4117,8 @@
     ],
     "categories": [
       "Software"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Numerical Methods with Programming Practice",
@@ -3986,7 +4180,8 @@
     ],
     "categories": [
       "Software"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Optical Design Lab",
@@ -4001,7 +4196,8 @@
     "categories": [
       "Optics",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Optical Engineering and Machine Vision",
@@ -4015,7 +4211,8 @@
     ],
     "categories": [
       "Optics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Optical Transmitters and Receivers",
@@ -4029,7 +4226,8 @@
     ],
     "categories": [
       "Optics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Optimal Control",
@@ -4091,7 +4289,8 @@
     ],
     "categories": [
       "Control Systems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Optimal Control and Estimation",
@@ -4113,7 +4312,8 @@
     ],
     "categories": [
       "Control Systems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Optoelectronic Measurement Engineering",
@@ -4131,7 +4331,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Organ Support Systems",
@@ -4157,7 +4358,8 @@
     ],
     "categories": [
       "Biomedical"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Organic and Flexible Electronics",
@@ -4171,7 +4373,8 @@
     ],
     "categories": [
       "Electronics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Pattern Recognition",
@@ -4197,7 +4400,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Photonics and Communications Lab",
@@ -4217,7 +4421,8 @@
       "Optics",
       "Communication",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Photovoltaics",
@@ -4236,7 +4441,8 @@
     "categories": [
       "Artificial Intelligence",
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Physical Basics of Laser Technology",
@@ -4254,7 +4460,8 @@
     ],
     "categories": [
       "Optics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Plasma Sources",
@@ -4268,7 +4475,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Polymers in MEMS A: Chemistry, Synthesis and Applications",
@@ -4292,7 +4500,8 @@
       "Materials",
       "Microsystems",
       "Project"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Polymers in MEMS B: Physics, Microstructuring and Applications",
@@ -4315,7 +4524,8 @@
     "categories": [
       "Materials",
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Polymers in MEMS C: Biopolymers and Bioplastics",
@@ -4335,7 +4545,8 @@
       "Materials",
       "Biomedical",
       "Microsystems"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Power Electronic Systems",
@@ -4353,7 +4564,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Power Electronics",
@@ -4376,7 +4588,8 @@
     "categories": [
       "Energy",
       "Electronics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Power System Protection and Automation",
@@ -4396,7 +4609,8 @@
       "Robotics",
       "Energy",
       "Control Systems"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Power Systems and Economy",
@@ -4414,7 +4628,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Power Tool Design",
@@ -4440,7 +4655,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Power Tool Design Project Work",
@@ -4459,7 +4675,8 @@
     "categories": [
       "Energy",
       "Project"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Practical Aspects of Electrical Drives",
@@ -4489,7 +4706,8 @@
     ],
     "categories": [
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Practical Course Polymers in MEMS",
@@ -4509,7 +4727,8 @@
       "Materials",
       "Microsystems",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Practical Course: Autonomous Driving",
@@ -4533,7 +4752,8 @@
       "Robotics",
       "Automotive",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Practical Course: Machine Learning and Intelligent Systems",
@@ -4560,7 +4780,8 @@
     "categories": [
       "Artificial Intelligence",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Practical Course: Smart Energy System",
@@ -4579,7 +4800,8 @@
     "categories": [
       "Energy",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Practical Course: Software Development and Application of Mobile, Bio-Inspired Robots",
@@ -4604,7 +4826,8 @@
       "Biomedical",
       "Software",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Practical Machine Learning",
@@ -4640,7 +4863,8 @@
       "Artificial Intelligence",
       "Software",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Practical Tools for Control Engineers",
@@ -4659,7 +4883,8 @@
     "categories": [
       "Control Systems",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Practical Training in Basics of Microsystem Technology",
@@ -4679,7 +4904,8 @@
       "Artificial Intelligence",
       "Microsystems",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Principles of Whole Vehicle Engineering I",
@@ -4697,7 +4923,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Principles of Whole Vehicle Engineering II",
@@ -4715,7 +4942,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Probabilistic Measurement and Estimation",
@@ -4753,7 +4981,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Product- and Production-Concepts for modern Automobiles",
@@ -4772,7 +5001,8 @@
     "categories": [
       "Automotive",
       "Manufacturing"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Product Development - Methods of Product Engineering",
@@ -4822,7 +5052,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Production Techniques Laboratory",
@@ -4841,7 +5072,8 @@
     "categories": [
       "Manufacturing",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Project Management in the Development of Products for Safety-Critical Applications",
@@ -4868,7 +5100,8 @@
     "categories": [
       "Manufacturing",
       "Project"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Project Workshop: Automotive Engineering",
@@ -4888,7 +5121,8 @@
       "Automotive",
       "Laboratory",
       "Project"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Python Algorithms for Automotive Engineering",
@@ -4915,7 +5149,8 @@
     "categories": [
       "Automotive",
       "Software"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Quality Management",
@@ -4933,7 +5168,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Quantum Detectors and Sensors",
@@ -4951,7 +5187,8 @@
     ],
     "categories": [
       "Quantum"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Quantum Machine Learning",
@@ -4966,7 +5203,8 @@
     "categories": [
       "Artificial Intelligence",
       "Quantum"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Quantum Machines I",
@@ -4989,7 +5227,8 @@
     "categories": [
       "Mechanical",
       "Quantum"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Quantum Machines II",
@@ -5012,7 +5251,8 @@
     "categories": [
       "Mechanical",
       "Quantum"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Radio-Frequency Electronics",
@@ -5030,7 +5270,8 @@
     ],
     "categories": [
       "Electronics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Rail System Technology",
@@ -5052,7 +5293,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Rail Vehicle Technology",
@@ -5075,7 +5317,8 @@
     "categories": [
       "Artificial Intelligence",
       "Automotive"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Railway System Digitalisation",
@@ -5094,7 +5337,8 @@
     "categories": [
       "Artificial Intelligence",
       "Electronics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Railways in the Transportation Market",
@@ -5112,7 +5356,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Re:Invent - Revolutionary Business Models as the Basis for Product Innovations",
@@ -5138,7 +5383,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Reactor Physics",
@@ -5156,7 +5402,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Reactor Safety 1: Fundamentals",
@@ -5174,7 +5421,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Real Time Control of Electrical Drives",
@@ -5192,7 +5440,8 @@
     ],
     "categories": [
       "Control Systems"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Reinforcement Learning",
@@ -5218,7 +5467,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Reliability and Test Engineering",
@@ -5252,7 +5502,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Renewable Energy-Resources, Technologies and Economics",
@@ -5274,7 +5525,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Robotics - Practical Course",
@@ -5293,7 +5545,8 @@
     "categories": [
       "Robotics",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Robotics II - Humanoid Robotics",
@@ -5311,7 +5564,8 @@
     ],
     "categories": [
       "Robotics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Robotics III - Sensors and Perception in Robotics",
@@ -5345,7 +5599,8 @@
     ],
     "categories": [
       "Robotics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Robotics, Automation, and Systems Control Lab",
@@ -5369,7 +5624,8 @@
       "Robotics",
       "Control Systems",
       "Laboratory"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Seamless Engineering",
@@ -5407,7 +5663,8 @@
     ],
     "categories": [
       "Project"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Seminar Data-Mining in Production",
@@ -5424,7 +5681,8 @@
       "Communication",
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Seminar Electrocatalysis",
@@ -5444,7 +5702,8 @@
       "Energy",
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Seminar Embedded Systems",
@@ -5463,7 +5722,8 @@
     "categories": [
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Seminar for Rail System Technology",
@@ -5479,7 +5739,8 @@
       "Artificial Intelligence",
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Seminar Industrial Process and Plant Engineering",
@@ -5499,7 +5760,8 @@
       "Manufacturing",
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Seminar Intelligent Industrial Robots",
@@ -5520,7 +5782,8 @@
       "Manufacturing",
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Seminar New Power Electronic Systems and Technologies",
@@ -5540,7 +5803,8 @@
       "Energy",
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Seminar Novel Concepts for Solar Energy Harvesting",
@@ -5560,7 +5824,8 @@
       "Energy",
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Seminar: Bionic Algorithms and Robot Technologies",
@@ -5582,7 +5847,8 @@
       "Software",
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Seminar: Energy Informatics",
@@ -5598,7 +5864,8 @@
       "Energy",
       "Laboratory",
       "Seminar"
-    ]
+    ],
+    "semester": "Irregular"
   },
   {
     "Name": "Sensors",
@@ -5628,7 +5895,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Signal Processing Lab",
@@ -5647,7 +5915,8 @@
     "categories": [
       "Communication",
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Signal Processing Methods",
@@ -5677,7 +5946,8 @@
     ],
     "categories": [
       "Communication"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Signal Processing with Nonlinear Fourier Transforms and Koopman Operators",
@@ -5691,7 +5961,8 @@
     ],
     "categories": [
       "Communication"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Simulation and Optimization in Robotics and Biomechanics",
@@ -5711,7 +5982,8 @@
       "Robotics",
       "Biomedical",
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Simulation with Lumped Parameters",
@@ -5737,7 +6009,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Software Engineering",
@@ -5759,7 +6032,8 @@
     ],
     "categories": [
       "Software"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Solar Energy",
@@ -5777,7 +6051,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Solar Thermal Energy Systems",
@@ -5795,7 +6070,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Spaceborne Radar Remote Sensing",
@@ -5809,7 +6085,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Stochastic Information Processing",
@@ -5831,7 +6108,8 @@
     ],
     "categories": [
       "Communication"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Strategic Product Development - Identification of Potentials of Innovative Products",
@@ -5849,7 +6127,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Structural Materials",
@@ -5863,7 +6142,8 @@
     ],
     "categories": [
       "Materials"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Student Innovation Lab",
@@ -5891,7 +6171,8 @@
       "Manufacturing",
       "Laboratory",
       "Project"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Superconducting Magnet Technology",
@@ -5905,7 +6186,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Superconducting Power Systems",
@@ -5919,7 +6201,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Sustainable Product Engineering: Sustainable Product Design - Long-term Business Success with Sustainably Developed Products",
@@ -5937,7 +6220,8 @@
     ],
     "categories": [
       "Artificial Intelligence"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "System Integration and Communication Structures in Industry 4.0 and IoT",
@@ -5955,7 +6239,8 @@
     ],
     "categories": [
       "Communication"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "System Integration in Micro- and Nanotechnology",
@@ -5973,7 +6258,8 @@
     ],
     "categories": [
       "Microsystems"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "System Integration in Micro- and Nanotechnology 2",
@@ -5991,7 +6277,8 @@
     ],
     "categories": [
       "Microsystems"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "System-on-Chip Laboratory",
@@ -6009,7 +6296,8 @@
     ],
     "categories": [
       "Laboratory"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Systems and Software Engineering",
@@ -6051,7 +6339,8 @@
     ],
     "categories": [
       "Software"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Technical Design in Product Development",
@@ -6065,7 +6354,8 @@
     ],
     "categories": [
       "Manufacturing"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Technical Optics",
@@ -6079,7 +6369,8 @@
     ],
     "categories": [
       "Optics"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Thermal Solar Energy",
@@ -6097,7 +6388,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Thermal Turbomachines I",
@@ -6116,7 +6408,8 @@
     "categories": [
       "Energy",
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Thermal-Fluid-Dynamics",
@@ -6135,7 +6428,8 @@
     "categories": [
       "Energy",
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Thermodynamics of the Energy Transition",
@@ -6150,7 +6444,8 @@
     "categories": [
       "Energy",
       "Mechanical"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Tires and Wheel Development for Passenger Cars",
@@ -6168,7 +6463,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Tractors",
@@ -6186,7 +6482,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Ubiquitous Computing",
@@ -6204,7 +6501,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Vacuum and Tritium Technology in Nuclear Fusion",
@@ -6218,7 +6516,8 @@
     ],
     "categories": [
       "Energy"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Validation of Technical Systems",
@@ -6240,7 +6539,8 @@
     ],
     "categories": [
       "General Engineering"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Vehicle Drive Technology",
@@ -6258,7 +6558,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Vehicle Lightweight Design - Strategies, Concepts, Materials",
@@ -6277,7 +6578,8 @@
     "categories": [
       "Automotive",
       "Materials"
-    ]
+    ],
+    "semester": "WS"
   },
   {
     "Name": "Vehicle Systems for Urban Mobility",
@@ -6295,7 +6597,8 @@
     ],
     "categories": [
       "Automotive"
-    ]
+    ],
+    "semester": "WS/SS"
   },
   {
     "Name": "Wearable Robotic Technologies",
@@ -6313,7 +6616,8 @@
     ],
     "categories": [
       "Robotics"
-    ]
+    ],
+    "semester": "SS"
   },
   {
     "Name": "Workshop Finite Element Method in Electromagnetics",
@@ -6331,6 +6635,7 @@
     ],
     "categories": [
       "Laboratory"
-    ]
+    ],
+    "semester": "SS"
   }
 ]
