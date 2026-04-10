@@ -73,6 +73,44 @@
     color: var(--text-primary);
 }
 
+/* Semester Badges */
+.semester-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all var(--transition-normal);
+}
+
+.semester-ws {
+    background: linear-gradient(135deg, #4A90E2 0%, #5BA3F5 100%);
+    color: white;
+}
+
+.semester-ss {
+    background: linear-gradient(135deg, #00AB84 0%, #00D4A1 100%);
+    color: white;
+}
+
+.semester-ws-ss {
+    background: linear-gradient(135deg, #E37222 0%, #F5A623 100%);
+    color: white;
+}
+
+.semester-irregular {
+    background: linear-gradient(135deg, #6C757D 0%, #868E96 100%);
+    color: white;
+}
+
+.semester-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 .availability-item {
     flex-direction: column;
     align-items: flex-start;

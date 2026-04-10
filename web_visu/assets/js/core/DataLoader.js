@@ -14,18 +14,10 @@ export class DataLoader {
      */
     async loadStudyPrograms() {
         try {
-            // For now, we'll hardcode the available study programs
-            // In a real implementation, you might have an index.json file
+            // Only Mechatronics Master program
             this.studyPrograms.set(CONSTANTS.STUDY_PROGRAMS.MECHATRONICS_MASTER, {
                 name: 'Mechatronics Master',
                 path: './study_programs/mechatronics_master/',
-                coursesFile: 'courses.json',
-                pdfFile: 'mhb.pdf'
-            });
-            
-            this.studyPrograms.set(CONSTANTS.STUDY_PROGRAMS.INFORMATIK_MASTER, {
-                name: 'Informatik Master',
-                path: './study_programs/informatik_master/',
                 coursesFile: 'courses.json',
                 pdfFile: 'mhb.pdf'
             });

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+</head>
+<body>
+    <h1>Semester Data Test</h1>
+    <div id="output"></div>
+    
+    <script>
+        fetch('./study_programs/mechatronics_master/courses.json')
+            .then(response => response.json())
+            .then(courses => {
+                const output = document.getElementById('output');
+                
+                // Count semesters
+                const semesters = new Set();
+                courses.forEach(course => {
+                    if (course.semester) {
+                        semesters.add(course.semester);
+                    }
+                });
+                
+                output.innerHTML = `
+                    <h2>Results:</h2>
+                    <p>Total courses: ${courses.length}</p>
+                    <p>Courses with semester: ${courses.filter(c => c.semester).length}</p>
+                    <p>Unique semesters: ${Array.from(semesters).join(', ')}</p>
+                    <h3>First 10 courses:</h3>
+                    <ul>
+                        ${courses.slice(0, 10).map(c => 
+                            `<li>${c.Name}: <strong>${c.semester || 'NO SEMESTER'}</strong></li>`
+                        ).join('')}
+                    </ul>
+                `;
+            })
+            .catch(error => {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            });
+    </script>
+</body>
+</html>

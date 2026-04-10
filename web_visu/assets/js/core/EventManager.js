@@ -42,6 +42,14 @@ export class EventManager {
             });
         }
 
+        // Semester filter
+        const semesterFilter = document.querySelector(CONSTANTS.SELECTORS.SEMESTER_FILTER);
+        if (semesterFilter) {
+            semesterFilter.addEventListener('change', () => {
+                this.courseCatalog.handleFilter();
+            });
+        }
+
         // FoS filter
         const fosFilter = document.querySelector(CONSTANTS.SELECTORS.FOS_FILTER);
         if (fosFilter) {

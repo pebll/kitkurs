@@ -45,6 +45,7 @@ const CONSTANTS = {
     SELECTORS: {
         SEARCH_INPUT: '#searchInput',
         CATEGORY_FILTER: '#categoryFilter',
+        SEMESTER_FILTER: '#semesterFilter',
         FOS_FILTER: '#fosFilter',
         COURSES_GRID: '#coursesGrid',
         RESULTS_COUNT: '#resultsCount',
@@ -116,6 +117,7 @@ class FilterComponent {
         this.fosOptions = new Set();
         this.fosCategoriesOptions = new Set();
         this.generalOptions = new Set();
+        this.semesters = new Set();
     }
 
     extractFilterOptions(courses) {
@@ -126,6 +128,11 @@ class FilterComponent {
             } else {
                 const categories = this.extractCategories(course.Name);
                 categories.forEach(cat => this.categories.add(cat));
+            }
+            
+            // Extract semesters
+            if (course.semester) {
+                this.semesters.add(course.semester);
             }
             
             // Extract availability options
@@ -149,6 +156,8 @@ class FilterComponent {
         this.generalOptions.add('Master\'s Thesis (30 CP)');
         this.generalOptions.add('Interdisciplinary Qualifications (8 CP)');
         this.generalOptions.add('Elective Area (22 CP)');
+        
+        console.log('Extracted semesters:', Array.from(this.semesters));
     }
 
     extractCategories(courseName) {
@@ -197,6 +206,7 @@ class FilterComponent {
 
     populateFilters() {
         this.populateCategoryFilter();
+        this.populateSemesterFilter();
         this.populateFosDropdown();
         this.populateCheckboxes('fosCategoriesCheckboxes', this.fosCategoriesOptions, 'fosCategory');
         this.populateCheckboxes('generalCheckboxes', this.generalOptions, 'general');
@@ -230,6 +240,40 @@ class FilterComponent {
             const shortName = fos.replace('Field of Specialization in Mechatronics and Information Technology / ', '');
             option.textContent = shortName;
             fosFilter.appendChild(option);
+        });
+    }
+
+    populateSemesterFilter() {
+        const semesterFilter = document.querySelector(CONSTANTS.SELECTORS.SEMESTER_FILTER);
+        if (!semesterFilter) {
+            console.error('Semester filter element not found!');
+            return;
+        }
+
+        console.log('Populating semester filter with:', Array.from(this.semesters));
+
+        semesterFilter.innerHTML = '<option value="">All Semesters</option>';
+        
+        const semesterOrder = ['WS', 'SS', 'WS/SS', 'Irregular'];
+        const semesterLabels = {
+            'WS': 'Winter Semester (WS)',
+            'SS': 'Summer Semester (SS)',
+            'WS/SS': 'Both Semesters (WS/SS)',
+            'Irregular': 'Irregular'
+        };
+        
+        const sortedSemesters = Array.from(this.semesters).sort((a, b) => {
+            return semesterOrder.indexOf(a) - semesterOrder.indexOf(b);
+        });
+        
+        console.log('Adding semester options:', sortedSemesters);
+        
+        sortedSemesters.forEach(semester => {
+            const option = document.createElement('option');
+            option.value = semester;
+            option.textContent = semesterLabels[semester] || semester;
+            semesterFilter.appendChild(option);
+            console.log('Added semester option:', semester);
         });
     }
 
@@ -296,6 +340,34 @@ class FilterComponent {
             }
             if (!courseCategories.includes(categoryFilter.value)) {
                 return false;
+            }
+        }
+
+        // Semester filter
+        const semesterFilter = document.querySelector(CONSTANTS.SELECTORS.SEMESTER_FILTER);
+        if (semesterFilter && semesterFilter.value) {
+            const selectedSemester = semesterFilter.value;
+            if (!course.semester) {
+                return false;
+            }
+            
+            // WS should include WS and WS/SS
+            // SS should include SS and WS/SS
+            // WS/SS only matches WS/SS
+            // Irregular only matches Irregular
+            if (selectedSemester === 'WS') {
+                if (course.semester !== 'WS' && course.semester !== 'WS/SS') {
+                    return false;
+                }
+            } else if (selectedSemester === 'SS') {
+                if (course.semester !== 'SS' && course.semester !== 'WS/SS') {
+                    return false;
+                }
+            } else {
+                // Exact match for WS/SS and Irregular
+                if (course.semester !== selectedSemester) {
+                    return false;
+                }
             }
         }
 
@@ -471,6 +543,14 @@ class CourseGrid {
                         <span class="detail-label">ECTS:</span>
                         <span class="detail-value">${course.ECTS}</span>
                     </div>
+                    
+                    ${course.semester ? `
+                        <div class="detail-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <span class="detail-label">Semester:</span>
+                            <span class="detail-value semester-badge semester-${course.semester.toLowerCase().replace('/', '-')}">${course.semester}</span>
+                        </div>
+                    ` : ''}
                     
                     <div class="detail-item availability-item">
                         <i class="fas fa-calendar-alt"></i>
@@ -654,6 +734,13 @@ class CourseCatalog {
         const categoryFilter = document.querySelector(CONSTANTS.SELECTORS.CATEGORY_FILTER);
         if (categoryFilter) {
             categoryFilter.addEventListener('change', () => {
+                this.handleFilter();
+            });
+        }
+
+        const semesterFilter = document.querySelector(CONSTANTS.SELECTORS.SEMESTER_FILTER);
+        if (semesterFilter) {
+            semesterFilter.addEventListener('change', () => {
                 this.handleFilter();
             });
         }

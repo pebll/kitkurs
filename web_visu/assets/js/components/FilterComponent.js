@@ -9,6 +9,7 @@ export class FilterComponent {
         this.fosOptions = new Set();
         this.fosCategoriesOptions = new Set();
         this.generalOptions = new Set();
+        this.semesters = new Set();
     }
 
     /**
@@ -22,11 +23,21 @@ export class FilterComponent {
         this.fosOptions.clear();
         this.fosCategoriesOptions.clear();
         this.generalOptions.clear();
+        this.semesters.clear();
 
         options.categories.forEach(cat => this.categories.add(cat));
         options.fosOptions.forEach(fos => this.fosOptions.add(fos));
         options.fosCategoriesOptions.forEach(fosCat => this.fosCategoriesOptions.add(fosCat));
         options.generalOptions.forEach(gen => this.generalOptions.add(gen));
+        
+        // Extract unique semesters from courses
+        courses.forEach(course => {
+            if (course.semester) {
+                this.semesters.add(course.semester);
+            }
+        });
+        
+        console.log('FilterComponent: Extracted semesters:', Array.from(this.semesters));
     }
 
     /**
@@ -34,6 +45,7 @@ export class FilterComponent {
      */
     populateFilters() {
         this.populateCategoryFilter();
+        this.populateSemesterFilter();
         this.populateFosDropdown();
         this.populateCheckboxes(CONSTANTS.SELECTORS.FOS_CATEGORIES_CHECKBOXES, this.fosCategoriesOptions, CONSTANTS.FILTER_TYPES.FOS_CATEGORY);
         this.populateCheckboxes(CONSTANTS.SELECTORS.GENERAL_CHECKBOXES, this.generalOptions, CONSTANTS.FILTER_TYPES.GENERAL);
@@ -75,6 +87,47 @@ export class FilterComponent {
             option.textContent = shortName;
             fosFilter.appendChild(option);
         });
+    }
+
+    /**
+     * Populate semester filter
+     */
+    populateSemesterFilter() {
+        const semesterFilter = document.querySelector(CONSTANTS.SELECTORS.SEMESTER_FILTER);
+        if (!semesterFilter) {
+            console.error('FilterComponent: Semester filter element not found!');
+            return;
+        }
+
+        console.log('FilterComponent: Populating semester filter with:', Array.from(this.semesters));
+
+        semesterFilter.innerHTML = '<option value="">All Semesters</option>';
+        
+        // Define semester order and labels
+        const semesterOrder = ['WS', 'SS', 'WS/SS', 'Irregular'];
+        const semesterLabels = {
+            'WS': 'Winter Semester (WS)',
+            'SS': 'Summer Semester (SS)',
+            'WS/SS': 'Both Semesters (WS/SS)',
+            'Irregular': 'Irregular'
+        };
+        
+        // Sort semesters according to the defined order
+        const sortedSemesters = Array.from(this.semesters).sort((a, b) => {
+            return semesterOrder.indexOf(a) - semesterOrder.indexOf(b);
+        });
+        
+        console.log('FilterComponent: Sorted semesters:', sortedSemesters);
+        
+        sortedSemesters.forEach(semester => {
+            const option = document.createElement('option');
+            option.value = semester;
+            option.textContent = semesterLabels[semester] || semester;
+            semesterFilter.appendChild(option);
+            console.log('FilterComponent: Added option:', semester, '->', semesterLabels[semester]);
+        });
+        
+        console.log('FilterComponent: Semester filter populated with', sortedSemesters.length, 'options');
     }
 
     /**
@@ -165,6 +218,34 @@ export class FilterComponent {
             }
             if (!courseCategories.includes(categoryFilter.value)) {
                 return false;
+            }
+        }
+
+        // Semester filter
+        const semesterFilter = document.querySelector(CONSTANTS.SELECTORS.SEMESTER_FILTER);
+        if (semesterFilter && semesterFilter.value) {
+            const selectedSemester = semesterFilter.value;
+            if (!course.semester) {
+                return false;
+            }
+            
+            // WS should include WS and WS/SS
+            // SS should include SS and WS/SS
+            // WS/SS only matches WS/SS
+            // Irregular only matches Irregular
+            if (selectedSemester === 'WS') {
+                if (course.semester !== 'WS' && course.semester !== 'WS/SS') {
+                    return false;
+                }
+            } else if (selectedSemester === 'SS') {
+                if (course.semester !== 'SS' && course.semester !== 'WS/SS') {
+                    return false;
+                }
+            } else {
+                // Exact match for WS/SS and Irregular
+                if (course.semester !== selectedSemester) {
+                    return false;
+                }
             }
         }
 

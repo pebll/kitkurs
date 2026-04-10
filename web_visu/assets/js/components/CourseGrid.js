@@ -122,6 +122,14 @@ export class CourseGrid {
                         <span class="detail-value">${Helpers.formatEcts(course.ECTS)}</span>
                     </div>
                     
+                    ${course.semester ? `
+                        <div class="detail-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <span class="detail-label">Semester:</span>
+                            <span class="detail-value semester-badge semester-${course.semester.toLowerCase().replace('/', '-')}">${course.semester}</span>
+                        </div>
+                    ` : ''}
+                    
                     <div class="detail-item availability-item">
                         <i class="fas fa-calendar-alt"></i>
                         <span class="detail-label">Available:</span>

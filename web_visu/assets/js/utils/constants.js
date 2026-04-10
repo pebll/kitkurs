@@ -3,15 +3,12 @@ export const CONSTANTS = {
     // API Endpoints
     ENDPOINTS: {
         MECHATRONICS_COURSES: './study_programs/mechatronics_master/courses.json',
-        INFORMATIK_COURSES: './study_programs/informatik_master/courses.json',
-        MECHATRONICS_PDF: './study_programs/mechatronics_master/mhb.pdf',
-        INFORMATIK_PDF: './study_programs/informatik_master/mhb.pdf'
+        MECHATRONICS_PDF: './study_programs/mechatronics_master/mhb.pdf'
     },
     
     // Study Programs
     STUDY_PROGRAMS: {
-        MECHATRONICS_MASTER: 'mechatronics_master',
-        INFORMATIK_MASTER: 'informatik_master'
+        MECHATRONICS_MASTER: 'mechatronics_master'
     },
     
     // Filter Types
@@ -42,6 +39,7 @@ export const CONSTANTS = {
     SELECTORS: {
         SEARCH_INPUT: '#searchInput',
         CATEGORY_FILTER: '#categoryFilter',
+        SEMESTER_FILTER: '#semesterFilter',
         FOS_FILTER: '#fosFilter',
         COURSES_GRID: '#coursesGrid',
         RESULTS_COUNT: '#resultsCount',
