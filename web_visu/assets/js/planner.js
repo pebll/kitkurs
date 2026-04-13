@@ -30,6 +30,7 @@ class CoursePlanner {
             this.renderSemesters();
             this.filterCourses('all');
             this.updateProgress();
+            this.setupDragAndDrop();
         } catch (error) {
             console.error('Error initializing planner:', error);
             this.showError('Failed to load courses. Please refresh the page.');
@@ -195,6 +196,9 @@ class CoursePlanner {
                 </div>
             `;
         }).join('');
+
+        // Re-attach drag listeners to new elements
+        this.attachSidebarDragListeners();
     }
 
     // Render semester columns
@@ -227,7 +231,7 @@ class CoursePlanner {
                      data-semester-id="${semesterId}" 
                      id="${semesterId}">
                     ${semesterCourses.length === 0 ? 
-                        '<span>Drag courses here</span>' : 
+                        '<span class="empty-message"><i class="fas fa-hand-pointer"></i><br>Drag courses here</span>' : 
                         this.renderSemesterCourses(semesterCourses)
                     }
                 </div>
@@ -235,21 +239,30 @@ class CoursePlanner {
 
             container.appendChild(semesterColumn);
         }
+
+        // Re-attach drag listeners
+        this.attachSemesterDragListeners();
     }
 
     // Render courses in a semester
     renderSemesterCourses(courses) {
-        return courses.map(course => `
-            <div class="semester-course-card" draggable="true" data-course-name="${course.Name}">
-                <div class="course-item-header">
-                    <div class="course-item-title">${course.Name}</div>
-                    <div class="course-item-ects">${course.ECTS}</div>
+        return courses.map(course => {
+            const escapedName = course.Name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            return `
+                <div class="semester-course-card" draggable="true" data-course-name="${course.Name}">
+                    <div class="course-item-header">
+                        <div class="course-item-title">${course.Name}</div>
+                        <div class="course-item-ects">${course.ECTS}</div>
+                    </div>
+                    <div class="course-item-semester">
+                        <i class="fas fa-calendar-alt"></i> ${course.semester || 'N/A'}
+                    </div>
+                    <button class="remove-course-btn" onclick="planner.removeCourseFromSemester('${escapedName}')" title="Remove course">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <div class="course-item-semester">
-                    <i class="fas fa-calendar-alt"></i> ${course.semester || 'N/A'}
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     // Calculate total ECTS for a semester
@@ -411,6 +424,155 @@ class CoursePlanner {
                 </div>
             `;
         }
+    }
+
+    // Setup Drag and Drop
+    setupDragAndDrop() {
+        this.attachSidebarDragListeners();
+        this.attachSemesterDragListeners();
+    }
+
+    // Attach drag listeners to sidebar course items
+    attachSidebarDragListeners() {
+        const courseItems = document.querySelectorAll('.course-list .course-item');
+        
+        courseItems.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', e.target.dataset.courseName);
+                e.dataTransfer.setData('source', 'sidebar');
+                e.target.classList.add('dragging');
+            });
+
+            item.addEventListener('dragend', (e) => {
+                e.target.classList.remove('dragging');
+            });
+        });
+    }
+
+    // Attach drag listeners to semester columns and course cards
+    attachSemesterDragListeners() {
+        // Attach to semester drop zones
+        const semesterZones = document.querySelectorAll('.semester-courses');
+        
+        semesterZones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                zone.classList.add('drag-over');
+            });
+
+            zone.addEventListener('dragleave', (e) => {
+                if (e.target === zone) {
+                    zone.classList.remove('drag-over');
+                }
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                
+                const courseName = e.dataTransfer.getData('text/plain');
+                const source = e.dataTransfer.getData('source');
+                const targetSemesterId = zone.dataset.semesterId;
+                
+                if (source === 'sidebar') {
+                    this.addCourseToSemester(courseName, targetSemesterId);
+                } else {
+                    const sourceSemesterId = e.dataTransfer.getData('sourceSemester');
+                    this.moveCourse(courseName, sourceSemesterId, targetSemesterId);
+                }
+            });
+        });
+
+        // Attach to semester course cards
+        const semesterCourses = document.querySelectorAll('.semester-course-card');
+        
+        semesterCourses.forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', e.target.dataset.courseName);
+                e.dataTransfer.setData('source', 'semester');
+                
+                // Find which semester this course is in
+                const semesterZone = e.target.closest('.semester-courses');
+                e.dataTransfer.setData('sourceSemester', semesterZone.dataset.semesterId);
+                
+                e.target.classList.add('dragging');
+            });
+
+            card.addEventListener('dragend', (e) => {
+                e.target.classList.remove('dragging');
+            });
+        });
+    }
+
+    // Add course to semester
+    addCourseToSemester(courseName, semesterId) {
+        // Find the course in allCourses
+        const course = this.allCourses.find(c => c.Name === courseName);
+        if (!course) return;
+
+        // Initialize semester if doesn't exist
+        if (!this.semesterPlan[semesterId]) {
+            this.semesterPlan[semesterId] = [];
+        }
+
+        // Check if course already exists in this semester
+        if (this.semesterPlan[semesterId].some(c => c.Name === courseName)) {
+            return;
+        }
+
+        // Add course to semester
+        this.semesterPlan[semesterId].push(course);
+        
+        // Save and re-render
+        this.saveSemesterPlan();
+        this.renderSemesters();
+        this.filterCourses(); // Refresh sidebar (removes added course)
+        this.updateProgress();
+    }
+
+    // Move course between semesters
+    moveCourse(courseName, sourceSemesterId, targetSemesterId) {
+        // Don't do anything if dropping in the same semester
+        if (sourceSemesterId === targetSemesterId) return;
+
+        // Find and remove from source
+        const sourceIndex = this.semesterPlan[sourceSemesterId]?.findIndex(c => c.Name === courseName);
+        if (sourceIndex === -1 || sourceIndex === undefined) return;
+
+        const course = this.semesterPlan[sourceSemesterId][sourceIndex];
+        this.semesterPlan[sourceSemesterId].splice(sourceIndex, 1);
+
+        // Add to target
+        if (!this.semesterPlan[targetSemesterId]) {
+            this.semesterPlan[targetSemesterId] = [];
+        }
+        this.semesterPlan[targetSemesterId].push(course);
+
+        // Save and re-render
+        this.saveSemesterPlan();
+        this.renderSemesters();
+        this.updateProgress();
+    }
+
+    // Remove course from semester (via button)
+    removeCourseFromSemester(courseName) {
+        // Find which semester contains this course
+        for (const [semesterId, courses] of Object.entries(this.semesterPlan)) {
+            const index = courses.findIndex(c => c.Name === courseName);
+            if (index !== -1) {
+                courses.splice(index, 1);
+                break;
+            }
+        }
+
+        // Save and re-render
+        this.saveSemesterPlan();
+        this.renderSemesters();
+        this.filterCourses(); // Refresh sidebar (adds removed course back)
+        this.updateProgress();
     }
 }
 
