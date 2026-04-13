@@ -525,80 +525,114 @@ class CoursePlanner {
         allPlannedCourses.forEach(course => {
             const ects = parseInt(course.ECTS) || 0;
 
-            // Special courses
-            if (course.Name === 'Master\'s Thesis') {
+            // Check by category using centralized logic
+            // Priority 1: Master's Thesis
+            if (this.isThesisCourse(course)) {
                 categories.thesis += ects;
                 return;
             }
 
-            if (course.Name === 'Interdisciplinary Qualifications') {
+            // Priority 2: Interdisciplinary
+            if (this.isInterdisciplinaryCourse(course)) {
                 categories.interdisciplinary += ects;
                 return;
             }
 
-            // Check Available in field
-            if (Array.isArray(course['Available in'])) {
-                // Priority order: FoS categories first (most restrictive), then Elective Area (least restrictive)
+            // Priority 3-5: FoS categories (only if matches selected FoS)
+            // Only count toward FoS categories if the course matches the selected FoS
+            const matchesFos = !this.fosSpecialization || 
+                               (course.isCustom && ['methodical', 'general', 'additive'].includes(course.customCategory)) ||
+                               (Array.isArray(course['Available in']) && course['Available in'].some(avail => 
+                                   avail.FoS && avail.FoS === selectedFosFullName
+                               ));
+
+            if (matchesFos) {
                 let categorized = false;
 
-                // Only count toward FoS categories if the course matches the selected FoS
-                const matchesFos = !this.fosSpecialization || course['Available in'].some(avail => 
-                    avail.FoS && avail.FoS === selectedFosFullName
-                );
-
-                if (matchesFos) {
-                    // Priority 1: FoS - Methodical (most restrictive)
-                    if (!categorized) {
-                        const hasMethodical = course['Available in'].some(avail => 
-                            avail.FoS === selectedFosFullName && 
-                            avail.subtype && avail.subtype.includes('Mandatory Electives - Methodical')
-                        );
-                        if (hasMethodical) {
-                            categories.methodical += ects;
-                            categorized = true;
-                        }
-                    }
-
-                    // Priority 2: FoS - General
-                    if (!categorized) {
-                        const hasGeneral = course['Available in'].some(avail => 
-                            avail.FoS === selectedFosFullName && 
-                            avail.subtype && avail.subtype.includes('Mandatory Electives - General')
-                        );
-                        if (hasGeneral) {
-                            categories.general += ects;
-                            categorized = true;
-                        }
-                    }
-
-                    // Priority 3: FoS - Additive
-                    if (!categorized) {
-                        const hasAdditive = course['Available in'].some(avail => 
-                            avail.FoS === selectedFosFullName && 
-                            avail.subtype && avail.subtype.includes('Additive Electives')
-                        );
-                        if (hasAdditive) {
-                            categories.additive += ects;
-                            categorized = true;
-                        }
-                    }
+                // Priority 3: FoS - Methodical (most restrictive)
+                if (!categorized && this.isFosMethodicalCourse(course, selectedFosFullName)) {
+                    categories.methodical += ects;
+                    categorized = true;
                 }
 
-                // Priority 4: Elective Area (least restrictive, most flexible)
-                // Counts regardless of FoS match
-                if (!categorized) {
-                    const hasElectiveArea = course['Available in'].some(avail => 
-                        avail.FoS && avail.FoS.includes('Elective Area')
-                    );
-                    if (hasElectiveArea) {
-                        categories.electiveArea += ects;
-                        categorized = true;
-                    }
+                // Priority 4: FoS - General
+                if (!categorized && this.isFosGeneralCourse(course, selectedFosFullName)) {
+                    categories.general += ects;
+                    categorized = true;
                 }
+
+                // Priority 5: FoS - Additive
+                if (!categorized && this.isFosAdditiveCourse(course, selectedFosFullName)) {
+                    categories.additive += ects;
+                    categorized = true;
+                }
+
+                if (categorized) return;
+            }
+
+            // Priority 6: Elective Area (least restrictive, most flexible)
+            // Counts regardless of FoS match
+            if (this.isElectiveAreaCourse(course)) {
+                categories.electiveArea += ects;
             }
         });
 
         return categories;
+    }
+
+    // Helper functions for course categorization
+    isThesisCourse(course) {
+        return course.Name === 'Master\'s Thesis' || 
+               (course.isCustom && course.customCategory === 'thesis');
+    }
+
+    isInterdisciplinaryCourse(course) {
+        return course.Name === 'Interdisciplinary Qualifications' || 
+               (course.isCustom && course.customCategory === 'interdisciplinary');
+    }
+
+    isElectiveAreaCourse(course) {
+        if (course.isCustom && course.customCategory === 'electiveArea') return true;
+        return Array.isArray(course['Available in']) && 
+               course['Available in'].some(avail => 
+                   avail.FoS && avail.FoS.includes('Elective Area')
+               );
+    }
+
+    isFosMethodicalCourse(course, fosFullName) {
+        if (course.isCustom && course.customCategory === 'methodical') return true;
+        if (!Array.isArray(course['Available in'])) return false;
+        return course['Available in'].some(avail => {
+            if (!avail.subtype || !avail.subtype.includes('Mandatory Electives - Methodical')) return false;
+            if (fosFullName && avail.FoS) {
+                return avail.FoS === fosFullName || avail.FoS.includes('Custom');
+            }
+            return true;
+        });
+    }
+
+    isFosGeneralCourse(course, fosFullName) {
+        if (course.isCustom && course.customCategory === 'general') return true;
+        if (!Array.isArray(course['Available in'])) return false;
+        return course['Available in'].some(avail => {
+            if (!avail.subtype || !avail.subtype.includes('Mandatory Electives - General')) return false;
+            if (fosFullName && avail.FoS) {
+                return avail.FoS === fosFullName || avail.FoS.includes('Custom');
+            }
+            return true;
+        });
+    }
+
+    isFosAdditiveCourse(course, fosFullName) {
+        if (course.isCustom && course.customCategory === 'additive') return true;
+        if (!Array.isArray(course['Available in'])) return false;
+        return course['Available in'].some(avail => {
+            if (!avail.subtype || !avail.subtype.includes('Additive Electives')) return false;
+            if (fosFullName && avail.FoS) {
+                return avail.FoS === fosFullName || avail.FoS.includes('Custom');
+            }
+            return true;
+        });
     }
 
     // Add a new semester
