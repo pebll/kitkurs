@@ -13,11 +13,43 @@
     backdrop-filter: blur(10px);
 }
 
-/* Star Button */
-.star-btn {
+.course-card.dimmed {
+    opacity: 0.4;
+    filter: grayscale(0.7);
+}
+
+.course-card.custom-course {
+    border-color: var(--kit-orange);
+    background: linear-gradient(135deg, rgba(227, 114, 34, 0.05) 0%, var(--card-gradient));
+}
+
+.custom-badge-card {
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    background: var(--kit-orange);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 5;
+}
+
+/* Action Buttons Container */
+.course-actions-top {
     position: absolute;
     top: var(--spacing-md);
     right: var(--spacing-md);
+    display: flex;
+    gap: var(--spacing-xs);
+    z-index: 10;
+}
+
+/* Star Button */
+.star-btn {
     background: rgba(0, 0, 0, 0.4);
     border: none;
     border-radius: 50%;
@@ -29,7 +61,6 @@
     cursor: pointer;
     transition: all var(--transition-normal);
     backdrop-filter: blur(5px);
-    z-index: 10;
 }
 
 .star-btn:hover {
@@ -54,6 +85,45 @@
 .star-btn:hover i {
     color: #FFD700;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+/* Not Interested Button */
+.not-interested-btn {
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    backdrop-filter: blur(5px);
+}
+
+.not-interested-btn:hover {
+    background: rgba(0, 0, 0, 0.6);
+    transform: scale(1.1);
+}
+
+.not-interested-btn i {
+    font-size: 1.2rem;
+    color: #dc3545;
+    transition: all var(--transition-normal);
+}
+
+.not-interested-btn.not-interested i {
+    color: #dc3545;
+}
+
+.not-interested-btn:not(.not-interested) i {
+    color: rgba(220, 53, 69, 0.3);
+}
+
+.not-interested-btn:hover i {
+    color: #dc3545;
+    text-shadow: 0 0 10px rgba(220, 53, 69, 0.8);
 }
 
 .course-card::before {
@@ -285,9 +355,17 @@
     position: relative;
     overflow: hidden;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-md);
+}
+
+.filter-toggles {
+    display: flex;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .favorites-toggle {
@@ -314,6 +392,10 @@
 
 .favorites-toggle label i {
     color: #FFD700;
+}
+
+.favorites-toggle label i.fa-eye-slash {
+    color: #dc3545;
 }
 
 .results-info::before {

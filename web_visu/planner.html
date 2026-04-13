@@ -71,7 +71,22 @@
             <!-- Center: Semester Columns -->
             <main class="semester-grid">
                 <div class="semester-controls">
-                    <h2><i class="fas fa-calendar-week"></i> Semester Plan</h2>
+                    <div class="controls-header">
+                        <h2><i class="fas fa-calendar-week"></i> Semester Plan</h2>
+                        <div class="fos-selection">
+                            <label for="fosSpecialization">My FoS:</label>
+                            <select id="fosSpecialization" onchange="planner.setFosSpecialization(this.value)">
+                                <option value="">Select Field of Specialization</option>
+                                <option value="Autonomous Systems and Al">Autonomous Systems and AI</option>
+                                <option value="Automation, Control, and Robotics">Automation, Control, and Robotics</option>
+                                <option value="Industrial Informatics and Systems Engineering">Industrial Informatics and Systems Engineering</option>
+                                <option value="Lightweight Technologies">Lightweight Technologies</option>
+                                <option value="Micro System Technology">Micro System Technology</option>
+                                <option value="Mobile Systems">Mobile Systems</option>
+                                <option value="Optics">Optics</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="control-buttons">
                         <button class="control-btn" onclick="planner.addSemester()" title="Add semester">
                             <i class="fas fa-plus"></i> Add Semester

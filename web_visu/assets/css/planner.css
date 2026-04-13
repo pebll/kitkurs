@@ -198,6 +198,11 @@
     transition: all var(--transition-normal);
 }
 
+.course-item.custom-course {
+    border-color: var(--kit-orange);
+    background: linear-gradient(135deg, rgba(227, 114, 34, 0.05) 0%, var(--card-background) 100%);
+}
+
 .course-item:hover {
     background: var(--card-gradient);
     border-color: var(--kit-green);
@@ -212,6 +217,19 @@
     opacity: 0.4;
     cursor: grabbing;
     transform: scale(0.95);
+}
+
+.custom-badge {
+    display: inline-block;
+    background: var(--kit-orange);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 4px;
 }
 
 .course-item-header {
@@ -260,8 +278,16 @@
     padding: var(--spacing-lg);
     border-bottom: 1px solid var(--dark-border);
     display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.controls-header {
+    display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
 }
 
 .semester-controls h2 {
@@ -271,6 +297,46 @@
     align-items: center;
     gap: var(--spacing-sm);
     margin: 0;
+}
+
+.fos-selection {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.fos-selection label {
+    color: var(--text-white);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+}
+
+.fos-selection select {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius);
+    color: var(--text-white);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    min-width: 250px;
+}
+
+.fos-selection select:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.fos-selection select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--kit-green);
+}
+
+.fos-selection select option {
+    background: var(--card-background);
+    color: var(--text-primary);
 }
 
 .control-buttons {
@@ -423,6 +489,11 @@
     position: relative;
 }
 
+.semester-course-card.custom-course {
+    border-color: var(--kit-orange);
+    background: linear-gradient(135deg, rgba(227, 114, 34, 0.05) 0%, var(--card-gradient));
+}
+
 .semester-course-card:hover {
     border-color: var(--kit-green);
     transform: translateY(-2px);
@@ -543,11 +614,174 @@
     margin-bottom: var(--spacing-md);
 }
 
+.category-summary {
+    background: rgba(0, 150, 130, 0.1);
+    border: 1px solid rgba(0, 150, 130, 0.3);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.fos-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: #ffc107;
+    font-size: var(--font-size-sm);
+}
+
+.fos-warning i {
+    font-size: var(--font-size-lg);
+    flex-shrink: 0;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--kit-green);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+}
+
+.summary-item i {
+    font-size: var(--font-size-lg);
+}
+
 .info-text {
     color: var(--text-light);
     font-style: italic;
     text-align: center;
     padding: var(--spacing-lg) 0;
+}
+
+.category-item {
+    background: var(--background);
+    border: 1px solid var(--dark-border);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    transition: all var(--transition-normal);
+}
+
+.category-item:last-child {
+    margin-bottom: 0;
+}
+
+.category-item.complete {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.05);
+}
+
+.category-item.in-progress {
+    border-color: #ffc107;
+    background: rgba(255, 193, 7, 0.05);
+}
+
+.category-item.not-started {
+    border-color: var(--dark-border);
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.category-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+}
+
+.category-label i {
+    color: var(--kit-blue);
+    width: 16px;
+    text-align: center;
+}
+
+.category-values {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    font-weight: var(--font-weight-bold);
+}
+
+.status-icon {
+    font-size: var(--font-size-sm);
+    margin-right: 4px;
+}
+
+.complete-icon {
+    color: #28a745;
+}
+
+.progress-icon {
+    color: #ffc107;
+}
+
+.not-started-icon {
+    color: var(--text-light);
+    font-size: 8px;
+}
+
+.current-value {
+    font-size: var(--font-size-lg);
+    color: var(--kit-green);
+}
+
+.separator {
+    color: var(--text-light);
+    font-size: var(--font-size-base);
+}
+
+.required-value {
+    font-size: var(--font-size-base);
+    color: var(--text-secondary);
+}
+
+.unit {
+    font-size: var(--font-size-xs);
+    color: var(--text-light);
+    font-weight: var(--font-weight-normal);
+}
+
+.category-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--dark-border);
+}
+
+.category-progress-fill {
+    height: 100%;
+    transition: width 0.5s ease, background 0.3s ease;
+    border-radius: 4px;
+}
+
+.category-note {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-style: italic;
+}
+
+.category-note i {
+    color: var(--kit-blue);
 }
 
 .planner-actions {

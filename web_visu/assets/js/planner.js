@@ -5,7 +5,9 @@ const PLANNER_CONSTANTS = {
     STORAGE_KEYS: {
         FAVORITES: 'kitkurs_favorites',
         SEMESTER_PLAN: 'kitkurs_semester_plan',
-        SEMESTER_COUNT: 'kitkurs_semester_count'
+        SEMESTER_COUNT: 'kitkurs_semester_count',
+        CUSTOM_COURSES: 'kitkurs_custom_courses',
+        FOS_SPECIALIZATION: 'kitkurs_fos_specialization'
     },
     DEFAULT_SEMESTERS: 4,
     TOTAL_REQUIRED_ECTS: 120
@@ -16,9 +18,11 @@ class CoursePlanner {
     constructor() {
         this.courses = [];
         this.allCourses = [];
+        this.customCourses = this.loadCustomCourses();
         this.favorites = this.loadFavorites();
         this.semesterPlan = this.loadSemesterPlan();
         this.semesterCount = this.loadSemesterCount();
+        this.fosSpecialization = this.loadFosSpecialization();
         this.currentFilter = 'all';
         
         this.init();
@@ -27,6 +31,7 @@ class CoursePlanner {
     async init() {
         try {
             await this.loadCourses();
+            this.initializeFosSelection();
             this.renderSemesters();
             this.filterCourses('all');
             this.updateProgress();
@@ -44,9 +49,12 @@ class CoursePlanner {
             if (!response.ok) {
                 throw new Error('Failed to fetch courses');
             }
-            this.allCourses = await response.json();
+            const fetchedCourses = await response.json();
+            
+            // Merge custom courses with fetched courses
+            this.allCourses = [...fetchedCourses, ...this.customCourses];
             this.courses = [...this.allCourses];
-            console.log(`Loaded ${this.courses.length} courses`);
+            console.log(`Loaded ${fetchedCourses.length} courses + ${this.customCourses.length} custom courses`);
         } catch (error) {
             console.error('Error loading courses:', error);
             throw error;
@@ -83,6 +91,66 @@ class CoursePlanner {
         } catch (error) {
             console.error('Error loading semester count:', error);
             return PLANNER_CONSTANTS.DEFAULT_SEMESTERS;
+        }
+    }
+
+    // LocalStorage: Load custom courses
+    loadCustomCourses() {
+        try {
+            const stored = localStorage.getItem(PLANNER_CONSTANTS.STORAGE_KEYS.CUSTOM_COURSES);
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error loading custom courses:', error);
+            return [];
+        }
+    }
+
+    // LocalStorage: Save custom courses
+    saveCustomCourses() {
+        try {
+            localStorage.setItem(PLANNER_CONSTANTS.STORAGE_KEYS.CUSTOM_COURSES, JSON.stringify(this.customCourses));
+        } catch (error) {
+            console.error('Error saving custom courses:', error);
+        }
+    }
+
+    // LocalStorage: Load FoS specialization
+    loadFosSpecialization() {
+        try {
+            const stored = localStorage.getItem(PLANNER_CONSTANTS.STORAGE_KEYS.FOS_SPECIALIZATION);
+            return stored || '';
+        } catch (error) {
+            console.error('Error loading FoS specialization:', error);
+            return '';
+        }
+    }
+
+    // LocalStorage: Save FoS specialization
+    saveFosSpecialization() {
+        try {
+            localStorage.setItem(PLANNER_CONSTANTS.STORAGE_KEYS.FOS_SPECIALIZATION, this.fosSpecialization);
+        } catch (error) {
+            console.error('Error saving FoS specialization:', error);
+        }
+    }
+
+    // Initialize FoS selection dropdown
+    initializeFosSelection() {
+        const fosSelect = document.getElementById('fosSpecialization');
+        if (fosSelect && this.fosSpecialization) {
+            fosSelect.value = this.fosSpecialization;
+        }
+    }
+
+    // Set FoS specialization
+    setFosSpecialization(fos) {
+        this.fosSpecialization = fos;
+        this.saveFosSpecialization();
+        this.updateProgress();
+        
+        // Show message if FoS selected
+        if (fos) {
+            console.log(`Selected FoS: ${fos}`);
         }
     }
 
@@ -181,11 +249,13 @@ class CoursePlanner {
 
         courseList.innerHTML = this.courses.map(course => {
             const isFavorite = this.favorites.includes(course.Name);
+            const isCustom = course.isCustom || false;
             return `
-                <div class="course-item" draggable="true" data-course-name="${course.Name}">
+                <div class="course-item ${isCustom ? 'custom-course' : ''}" draggable="true" data-course-name="${course.Name}">
                     <div class="course-item-header">
                         <div class="course-item-title">
                             ${isFavorite ? '<i class="fas fa-star" style="color: #FFD700; margin-right: 4px;"></i>' : ''}
+                            ${isCustom ? '<span class="custom-badge">Custom</span>' : ''}
                             ${course.Name}
                         </div>
                         <div class="course-item-ects">${course.ECTS}</div>
@@ -248,10 +318,14 @@ class CoursePlanner {
     renderSemesterCourses(courses) {
         return courses.map(course => {
             const escapedName = course.Name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const isCustom = course.isCustom || false;
             return `
-                <div class="semester-course-card" draggable="true" data-course-name="${course.Name}">
+                <div class="semester-course-card ${isCustom ? 'custom-course' : ''}" draggable="true" data-course-name="${course.Name}">
                     <div class="course-item-header">
-                        <div class="course-item-title">${course.Name}</div>
+                        <div class="course-item-title">
+                            ${isCustom ? '<span class="custom-badge">Custom</span>' : ''}
+                            ${course.Name}
+                        </div>
                         <div class="course-item-ects">${course.ECTS}</div>
                     </div>
                     <div class="course-item-semester">
@@ -297,7 +371,234 @@ class CoursePlanner {
 
         if (totalProgressElement) {
             totalProgressElement.style.width = `${percentage}%`;
+            
+            // Color based on progress
+            if (percentage < 33) {
+                totalProgressElement.style.background = 'linear-gradient(135deg, #dc3545 0%, #e74c3c 100%)';
+            } else if (percentage < 66) {
+                totalProgressElement.style.background = 'linear-gradient(135deg, #ffc107 0%, #ffb300 100%)';
+            } else {
+                totalProgressElement.style.background = 'var(--secondary-gradient)';
+            }
         }
+
+        this.updateCategoryProgress();
+    }
+
+    // Calculate category progress
+    updateCategoryProgress() {
+        const categories = this.calculateCategoryEcts();
+        const categoryProgressElement = document.getElementById('categoryProgress');
+        
+        if (!categoryProgressElement) return;
+
+        const requirements = {
+            'thesis': { label: 'Master\'s Thesis', required: 30, icon: 'fa-graduation-cap' },
+            'electiveArea': { label: 'Elective Area', required: 22, icon: 'fa-tasks' },
+            'general': { label: 'FoS - General', required: 18, icon: 'fa-book' },
+            'additive': { label: 'FoS - Additive', required: 24, icon: 'fa-plus-circle' },
+            'methodical': { label: 'FoS - Methodical', required: 18, icon: 'fa-cogs' },
+            'interdisciplinary': { label: 'Interdisciplinary', required: 8, icon: 'fa-puzzle-piece' }
+        };
+
+        let html = '<h3>Category Requirements</h3>';
+
+        // Show warning if no FoS selected
+        if (!this.fosSpecialization) {
+            html += `
+                <div class="fos-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Please select your Field of Specialization above to accurately track FoS category progress.</span>
+                </div>
+            `;
+        }
+
+        // Calculate overall completion
+        let totalRequired = 0;
+        let totalCurrent = 0;
+        let completedCount = 0;
+        const totalCategories = Object.keys(requirements).length;
+
+        for (const [key, req] of Object.entries(requirements)) {
+            const current = categories[key] || 0;
+            totalRequired += req.required;
+            totalCurrent += Math.min(current, req.required);
+            if (current >= req.required) completedCount++;
+        }
+
+        // Add summary
+        html += `
+            <div class="category-summary">
+                <div class="summary-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>${completedCount}/${totalCategories} categories complete</span>
+                </div>
+            </div>
+        `;
+
+        for (const [key, req] of Object.entries(requirements)) {
+            const current = categories[key] || 0;
+            const percentage = Math.min((current / req.required) * 100, 100);
+            const isComplete = current >= req.required;
+            const statusClass = isComplete ? 'complete' : (percentage > 0 ? 'in-progress' : 'not-started');
+            
+            // Color based on percentage
+            let barColor;
+            if (percentage === 0) {
+                barColor = 'rgba(255, 255, 255, 0.1)';
+            } else if (percentage < 50) {
+                barColor = 'linear-gradient(135deg, #dc3545 0%, #e74c3c 100%)';
+            } else if (percentage < 100) {
+                barColor = 'linear-gradient(135deg, #ffc107 0%, #ffb300 100%)';
+            } else {
+                barColor = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+            }
+
+            // Status icon
+            let statusIcon = '';
+            if (isComplete) {
+                statusIcon = '<i class="fas fa-check-circle status-icon complete-icon"></i>';
+            } else if (percentage > 0) {
+                statusIcon = '<i class="fas fa-clock status-icon progress-icon"></i>';
+            } else {
+                statusIcon = '<i class="fas fa-circle status-icon not-started-icon"></i>';
+            }
+
+            html += `
+                <div class="category-item ${statusClass}">
+                    <div class="category-header">
+                        <div class="category-label">
+                            <i class="fas ${req.icon}"></i>
+                            <span>${req.label}</span>
+                        </div>
+                        <div class="category-values">
+                            ${statusIcon}
+                            <span class="current-value">${current}</span>
+                            <span class="separator">/</span>
+                            <span class="required-value">${req.required}</span>
+                            <span class="unit">CP</span>
+                        </div>
+                    </div>
+                    <div class="category-progress-bar">
+                        <div class="category-progress-fill" style="width: ${percentage}%; background: ${barColor};"></div>
+                    </div>
+                    ${current > req.required ? `
+                        <div class="category-note">
+                            <i class="fas fa-info-circle"></i>
+                            +${current - req.required} CP extra
+                        </div>
+                    ` : current < req.required && current > 0 ? `
+                        <div class="category-note">
+                            <i class="fas fa-exclamation-circle"></i>
+                            ${req.required - current} CP remaining
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        categoryProgressElement.innerHTML = html;
+    }
+
+    // Calculate ECTS by category
+    calculateCategoryEcts() {
+        const categories = {
+            thesis: 0,
+            interdisciplinary: 0,
+            electiveArea: 0,
+            methodical: 0,
+            general: 0,
+            additive: 0
+        };
+
+        // Get all courses from all semesters
+        const allPlannedCourses = [];
+        Object.values(this.semesterPlan).forEach(semester => {
+            allPlannedCourses.push(...semester);
+        });
+
+        // Build the full FoS string for matching
+        const selectedFosFullName = this.fosSpecialization ? 
+            `Field of Specialization in Mechatronics and Information Technology / ${this.fosSpecialization}` : 
+            '';
+
+        allPlannedCourses.forEach(course => {
+            const ects = parseInt(course.ECTS) || 0;
+
+            // Special courses
+            if (course.Name === 'Master\'s Thesis') {
+                categories.thesis += ects;
+                return;
+            }
+
+            if (course.Name === 'Interdisciplinary Qualifications') {
+                categories.interdisciplinary += ects;
+                return;
+            }
+
+            // Check Available in field
+            if (Array.isArray(course['Available in'])) {
+                // Priority order: FoS categories first (most restrictive), then Elective Area (least restrictive)
+                let categorized = false;
+
+                // Only count toward FoS categories if the course matches the selected FoS
+                const matchesFos = !this.fosSpecialization || course['Available in'].some(avail => 
+                    avail.FoS && avail.FoS === selectedFosFullName
+                );
+
+                if (matchesFos) {
+                    // Priority 1: FoS - Methodical (most restrictive)
+                    if (!categorized) {
+                        const hasMethodical = course['Available in'].some(avail => 
+                            avail.FoS === selectedFosFullName && 
+                            avail.subtype && avail.subtype.includes('Mandatory Electives - Methodical')
+                        );
+                        if (hasMethodical) {
+                            categories.methodical += ects;
+                            categorized = true;
+                        }
+                    }
+
+                    // Priority 2: FoS - General
+                    if (!categorized) {
+                        const hasGeneral = course['Available in'].some(avail => 
+                            avail.FoS === selectedFosFullName && 
+                            avail.subtype && avail.subtype.includes('Mandatory Electives - General')
+                        );
+                        if (hasGeneral) {
+                            categories.general += ects;
+                            categorized = true;
+                        }
+                    }
+
+                    // Priority 3: FoS - Additive
+                    if (!categorized) {
+                        const hasAdditive = course['Available in'].some(avail => 
+                            avail.FoS === selectedFosFullName && 
+                            avail.subtype && avail.subtype.includes('Additive Electives')
+                        );
+                        if (hasAdditive) {
+                            categories.additive += ects;
+                            categorized = true;
+                        }
+                    }
+                }
+
+                // Priority 4: Elective Area (least restrictive, most flexible)
+                // Counts regardless of FoS match
+                if (!categorized) {
+                    const hasElectiveArea = course['Available in'].some(avail => 
+                        avail.FoS && avail.FoS.includes('Elective Area')
+                    );
+                    if (hasElectiveArea) {
+                        categories.electiveArea += ects;
+                        categorized = true;
+                    }
+                }
+            }
+        });
+
+        return categories;
     }
 
     // Add a new semester
@@ -357,6 +658,8 @@ class CoursePlanner {
         const planData = {
             semesterPlan: this.semesterPlan,
             semesterCount: this.semesterCount,
+            fosSpecialization: this.fosSpecialization,
+            customCourses: this.customCourses,
             exportDate: new Date().toISOString()
         };
 
@@ -391,6 +694,23 @@ class CoursePlanner {
                         this.semesterPlan = planData.semesterPlan;
                         this.semesterCount = planData.semesterCount;
                         
+                        // Import FoS specialization if present
+                        if (planData.fosSpecialization) {
+                            this.fosSpecialization = planData.fosSpecialization;
+                            this.saveFosSpecialization();
+                            this.initializeFosSelection();
+                        }
+                        
+                        // Import custom courses if present
+                        if (planData.customCourses && Array.isArray(planData.customCourses)) {
+                            this.customCourses = planData.customCourses;
+                            this.saveCustomCourses();
+                            
+                            // Reload courses to include custom ones
+                            this.allCourses = this.allCourses.filter(c => !c.isCustom);
+                            this.allCourses.push(...this.customCourses);
+                        }
+                        
                         this.saveSemesterPlan();
                         this.saveSemesterCount();
                         
@@ -424,6 +744,154 @@ class CoursePlanner {
                 </div>
             `;
         }
+    }
+
+    // Open custom course modal
+    openCustomCourseModal(editCourse = null) {
+        const modal = document.getElementById('customCourseModal');
+        const form = document.getElementById('customCourseForm');
+        const modalTitle = document.getElementById('customCourseModalTitle');
+        
+        if (!modal || !form) return;
+
+        if (editCourse) {
+            modalTitle.textContent = 'Edit Custom Course';
+            document.getElementById('courseName').value = editCourse.Name;
+            document.getElementById('courseEcts').value = parseInt(editCourse.ECTS);
+            document.getElementById('courseSemester').value = editCourse.semester || '';
+            document.getElementById('courseCategory').value = editCourse.customCategory || '';
+            form.dataset.editCourse = editCourse.Name;
+        } else {
+            modalTitle.textContent = 'Add Custom Course';
+            form.reset();
+            delete form.dataset.editCourse;
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    // Close custom course modal
+    closeCustomCourseModal() {
+        const modal = document.getElementById('customCourseModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Save custom course
+    saveCustomCourse() {
+        const form = document.getElementById('customCourseForm');
+        const name = document.getElementById('courseName').value.trim();
+        const ects = document.getElementById('courseEcts').value.trim();
+        const semester = document.getElementById('courseSemester').value;
+        const category = document.getElementById('courseCategory').value;
+
+        if (!name || !ects || !semester || !category) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        const editingCourse = form.dataset.editCourse;
+        
+        if (editingCourse) {
+            // Edit existing custom course
+            const index = this.customCourses.findIndex(c => c.Name === editingCourse);
+            if (index !== -1) {
+                this.customCourses[index] = {
+                    Name: name,
+                    ECTS: `${ects} CP`,
+                    semester: semester,
+                    customCategory: category,
+                    isCustom: true,
+                    'Available in': this.getCategoryAvailability(category)
+                };
+                
+                // Update in allCourses
+                const allIndex = this.allCourses.findIndex(c => c.Name === editingCourse);
+                if (allIndex !== -1) {
+                    this.allCourses[allIndex] = this.customCourses[index];
+                }
+                
+                // Update in semester plan if exists
+                Object.keys(this.semesterPlan).forEach(semesterId => {
+                    const courseIndex = this.semesterPlan[semesterId].findIndex(c => c.Name === editingCourse);
+                    if (courseIndex !== -1) {
+                        this.semesterPlan[semesterId][courseIndex] = this.customCourses[index];
+                    }
+                });
+                
+                this.saveSemesterPlan();
+            }
+        } else {
+            // Check for duplicate name
+            if (this.allCourses.some(c => c.Name === name)) {
+                alert('A course with this name already exists');
+                return;
+            }
+
+            // Add new custom course
+            const newCourse = {
+                Name: name,
+                ECTS: `${ects} CP`,
+                semester: semester,
+                customCategory: category,
+                isCustom: true,
+                'Available in': this.getCategoryAvailability(category)
+            };
+
+            this.customCourses.push(newCourse);
+            this.allCourses.push(newCourse);
+        }
+
+        this.saveCustomCourses();
+        this.filterCourses();
+        this.renderSemesters();
+        this.updateProgress();
+        this.closeCustomCourseModal();
+    }
+
+    // Get category availability structure
+    getCategoryAvailability(category) {
+        const categoryMap = {
+            'thesis': [],
+            'interdisciplinary': [],
+            'electiveArea': [{ FoS: 'Elective Area in Mechatronics and Information Technology', subtype: 'Elective Area in Mechatronics and Information Technology' }],
+            'methodical': [{ FoS: 'Field of Specialization in Mechatronics and Information Technology / Custom', subtype: 'Mandatory Electives - Methodical' }],
+            'general': [{ FoS: 'Field of Specialization in Mechatronics and Information Technology / Custom', subtype: 'Mandatory Electives - General' }],
+            'additive': [{ FoS: 'Field of Specialization in Mechatronics and Information Technology / Custom', subtype: 'Additive Electives' }]
+        };
+
+        return categoryMap[category] || [];
+    }
+
+    // Edit custom course
+    editCustomCourse(courseName) {
+        const course = this.customCourses.find(c => c.Name === courseName);
+        if (course) {
+            this.openCustomCourseModal(course);
+        }
+    }
+
+    // Delete custom course
+    deleteCustomCourse(courseName) {
+        if (!confirm(`Are you sure you want to delete "${courseName}"?`)) {
+            return;
+        }
+
+        // Remove from custom courses
+        this.customCourses = this.customCourses.filter(c => c.Name !== courseName);
+        this.allCourses = this.allCourses.filter(c => c.Name !== courseName);
+
+        // Remove from semester plan if exists
+        Object.keys(this.semesterPlan).forEach(semesterId => {
+            this.semesterPlan[semesterId] = this.semesterPlan[semesterId].filter(c => c.Name !== courseName);
+        });
+
+        this.saveCustomCourses();
+        this.saveSemesterPlan();
+        this.filterCourses();
+        this.renderSemesters();
+        this.updateProgress();
     }
 
     // Setup Drag and Drop

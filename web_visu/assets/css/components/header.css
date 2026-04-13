@@ -96,3 +96,30 @@
     border-color: var(--kit-green);
     color: var(--text-white);
 }
+
+/* Add Custom Course Button */
+.add-custom-course-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-xl);
+    background: var(--kit-orange);
+    border: 2px solid var(--kit-orange);
+    border-radius: var(--border-radius);
+    color: var(--text-white);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.add-custom-course-btn:hover {
+    background: #d96a1e;
+    border-color: #d96a1e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(227, 114, 34, 0.4);
+}
+
+.add-custom-course-btn i {
+    font-size: var(--font-size-lg);
+}

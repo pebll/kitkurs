@@ -54,10 +54,13 @@ const CONSTANTS = {
         PDF_VIEWER: '#pdfViewer',
         PDF_TITLE: '#pdfTitle',
         CLOSE_PDF_MODAL: '#closePdfModal',
-        SHOW_FAVORITES_ONLY: '#showFavoritesOnly'
+        SHOW_FAVORITES_ONLY: '#showFavoritesOnly',
+        HIDE_NOT_INTERESTED: '#hideNotInterested'
     },
     STORAGE_KEYS: {
-        FAVORITES: 'kitkurs_favorites'
+        FAVORITES: 'kitkurs_favorites',
+        NOT_INTERESTED: 'kitkurs_not_interested',
+        CUSTOM_COURSES: 'kitkurs_custom_courses'
     }
 };
 
@@ -65,6 +68,7 @@ const CONSTANTS = {
 class FavoritesManager {
     constructor() {
         this.favorites = this.loadFavorites();
+        this.notInterested = this.loadNotInterested();
     }
 
     loadFavorites() {
@@ -77,6 +81,16 @@ class FavoritesManager {
         }
     }
 
+    loadNotInterested() {
+        try {
+            const stored = localStorage.getItem(CONSTANTS.STORAGE_KEYS.NOT_INTERESTED);
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error loading not interested:', error);
+            return [];
+        }
+    }
+
     saveFavorites() {
         try {
             localStorage.setItem(CONSTANTS.STORAGE_KEYS.FAVORITES, JSON.stringify(this.favorites));
@@ -85,14 +99,32 @@ class FavoritesManager {
         }
     }
 
+    saveNotInterested() {
+        try {
+            localStorage.setItem(CONSTANTS.STORAGE_KEYS.NOT_INTERESTED, JSON.stringify(this.notInterested));
+        } catch (error) {
+            console.error('Error saving not interested:', error);
+        }
+    }
+
     isFavorite(courseName) {
         return this.favorites.includes(courseName);
+    }
+
+    isNotInterested(courseName) {
+        return this.notInterested.includes(courseName);
     }
 
     toggleFavorite(courseName) {
         const index = this.favorites.indexOf(courseName);
         if (index === -1) {
             this.favorites.push(courseName);
+            // Remove from not interested if it was there
+            const notIntIndex = this.notInterested.indexOf(courseName);
+            if (notIntIndex !== -1) {
+                this.notInterested.splice(notIntIndex, 1);
+                this.saveNotInterested();
+            }
         } else {
             this.favorites.splice(index, 1);
         }
@@ -100,8 +132,29 @@ class FavoritesManager {
         return this.isFavorite(courseName);
     }
 
+    toggleNotInterested(courseName) {
+        const index = this.notInterested.indexOf(courseName);
+        if (index === -1) {
+            this.notInterested.push(courseName);
+            // Remove from favorites if it was there
+            const favIndex = this.favorites.indexOf(courseName);
+            if (favIndex !== -1) {
+                this.favorites.splice(favIndex, 1);
+                this.saveFavorites();
+            }
+        } else {
+            this.notInterested.splice(index, 1);
+        }
+        this.saveNotInterested();
+        return this.isNotInterested(courseName);
+    }
+
     getFavorites() {
         return [...this.favorites];
+    }
+
+    getNotInterested() {
+        return [...this.notInterested];
     }
 }
 
@@ -109,6 +162,25 @@ class FavoritesManager {
 class DataLoader {
     constructor() {
         this.courses = [];
+        this.customCourses = this.loadCustomCourses();
+    }
+
+    loadCustomCourses() {
+        try {
+            const stored = localStorage.getItem(CONSTANTS.STORAGE_KEYS.CUSTOM_COURSES);
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error loading custom courses:', error);
+            return [];
+        }
+    }
+
+    saveCustomCourses() {
+        try {
+            localStorage.setItem(CONSTANTS.STORAGE_KEYS.CUSTOM_COURSES, JSON.stringify(this.customCourses));
+        } catch (error) {
+            console.error('Error saving custom courses:', error);
+        }
     }
 
     async loadCourses() {
@@ -117,8 +189,9 @@ class DataLoader {
             if (!response.ok) {
                 throw new Error('Failed to fetch courses');
             }
-            this.courses = await response.json();
-            console.log(`Loaded ${this.courses.length} courses`);
+            const fetchedCourses = await response.json();
+            this.courses = [...fetchedCourses, ...this.customCourses];
+            console.log(`Loaded ${fetchedCourses.length} courses + ${this.customCourses.length} custom courses`);
             return this.courses;
         } catch (error) {
             console.error('Error loading courses:', error);
@@ -465,11 +538,19 @@ class FilterComponent {
         // Check Program components
         if (selectedGeneral.length > 0) {
             const matchesGeneral = selectedGeneral.some(general => {
-                if (general.includes('Master\'s Thesis') && course.Name === 'Master\'s Thesis') {
-                    return true;
+                if (general.includes('Master\'s Thesis')) {
+                    // Check both name and custom category
+                    if (course.Name === 'Master\'s Thesis' || 
+                        (course.customCategory === 'thesis' && course.isCustom)) {
+                        return true;
+                    }
                 }
-                if (general.includes('Interdisciplinary Qualifications') && course.Name === 'Interdisciplinary Qualifications') {
-                    return true;
+                if (general.includes('Interdisciplinary Qualifications')) {
+                    // Check both name and custom category
+                    if (course.Name === 'Interdisciplinary Qualifications' || 
+                        (course.customCategory === 'interdisciplinary' && course.isCustom)) {
+                        return true;
+                    }
                 }
                 if (general.includes('Elective Area') && Array.isArray(course['Available in'])) {
                     return course['Available in'].some(avail => 
@@ -582,13 +663,22 @@ class CourseGrid {
         }
         
         const isFavorite = this.courseCatalog.favoritesManager.isFavorite(course.Name);
+        const isNotInterested = this.courseCatalog.favoritesManager.isNotInterested(course.Name);
         const starClass = isFavorite ? 'starred' : '';
+        const notInterestedClass = isNotInterested ? 'not-interested' : '';
+        const isCustom = course.isCustom || false;
         
         return `
-            <div class="course-card" data-course-name="${course.Name}">
-                <button class="star-btn ${starClass}" onclick="courseCatalog.toggleFavorite('${course.Name.replace(/'/g, "\\'")}', this)" title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
-                    <i class="fas fa-star"></i>
-                </button>
+            <div class="course-card ${isNotInterested ? 'dimmed' : ''} ${isCustom ? 'custom-course' : ''}" data-course-name="${course.Name}">
+                <div class="course-actions-top">
+                    <button class="star-btn ${starClass}" onclick="courseCatalog.toggleFavorite('${course.Name.replace(/'/g, "\\'")}', this)" title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
+                        <i class="fas fa-star"></i>
+                    </button>
+                    <button class="not-interested-btn ${notInterestedClass}" onclick="courseCatalog.toggleNotInterested('${course.Name.replace(/'/g, "\\'")}', this)" title="${isNotInterested ? 'Mark as interested' : 'Not interested'}">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+                ${isCustom ? '<span class="custom-badge-card">Custom</span>' : ''}
                 <h3 class="course-title">${course.Name}</h3>
                 
                 <div class="course-details">
@@ -815,6 +905,14 @@ class CourseCatalog {
             });
         }
 
+        // Hide not interested toggle
+        const hideNotInterested = document.querySelector(CONSTANTS.SELECTORS.HIDE_NOT_INTERESTED);
+        if (hideNotInterested) {
+            hideNotInterested.addEventListener('change', () => {
+                this.handleFilter();
+            });
+        }
+
         // Checkbox event listeners
         document.addEventListener('change', (e) => {
             if (e.target.type === 'checkbox' && e.target.dataset.type) {
@@ -845,11 +943,19 @@ class CourseCatalog {
     handleFilter() {
         const searchTerm = this.searchComponent.getSearchTerm();
         const showFavoritesOnly = document.querySelector(CONSTANTS.SELECTORS.SHOW_FAVORITES_ONLY);
+        const hideNotInterested = document.querySelector(CONSTANTS.SELECTORS.HIDE_NOT_INTERESTED);
         
         this.filteredCourses = this.courses.filter(course => {
             // Check favorites filter first
             if (showFavoritesOnly && showFavoritesOnly.checked) {
                 if (!this.favoritesManager.isFavorite(course.Name)) {
+                    return false;
+                }
+            }
+            
+            // Check hide not interested filter
+            if (hideNotInterested && hideNotInterested.checked) {
+                if (this.favoritesManager.isNotInterested(course.Name)) {
                     return false;
                 }
             }
@@ -1033,6 +1139,161 @@ class CourseCatalog {
         if (showFavoritesOnly && showFavoritesOnly.checked) {
             this.handleFilter();
         }
+        
+        // Update not interested button if it exists
+        const card = button.closest('.course-card');
+        const notIntBtn = card.querySelector('.not-interested-btn');
+        if (notIntBtn && notIntBtn.classList.contains('not-interested')) {
+            notIntBtn.classList.remove('not-interested');
+            notIntBtn.title = 'Not interested';
+            card.classList.remove('dimmed');
+        }
+    }
+
+    toggleNotInterested(courseName, button) {
+        const isNotInterested = this.favoritesManager.toggleNotInterested(courseName);
+        
+        const card = button.closest('.course-card');
+        
+        if (isNotInterested) {
+            button.classList.add('not-interested');
+            button.title = 'Mark as interested';
+            card.classList.add('dimmed');
+        } else {
+            button.classList.remove('not-interested');
+            button.title = 'Not interested';
+            card.classList.remove('dimmed');
+        }
+        
+        // Update star button if it exists
+        const starBtn = card.querySelector('.star-btn');
+        if (starBtn && starBtn.classList.contains('starred')) {
+            starBtn.classList.remove('starred');
+            starBtn.title = 'Add to favorites';
+        }
+    }
+
+    // Custom course methods
+    openCustomCourseModal(editCourse = null) {
+        const modal = document.getElementById('customCourseModal');
+        const form = document.getElementById('customCourseForm');
+        const modalTitle = document.getElementById('customCourseModalTitle');
+        
+        if (!modal || !form) return;
+
+        if (editCourse) {
+            modalTitle.textContent = 'Edit Custom Course';
+            document.getElementById('courseName').value = editCourse.Name;
+            document.getElementById('courseEcts').value = parseInt(editCourse.ECTS);
+            document.getElementById('courseSemester').value = editCourse.semester || '';
+            document.getElementById('courseCategory').value = editCourse.customCategory || '';
+            form.dataset.editCourse = editCourse.Name;
+        } else {
+            modalTitle.textContent = 'Add Custom Course';
+            form.reset();
+            delete form.dataset.editCourse;
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    closeCustomCourseModal() {
+        const modal = document.getElementById('customCourseModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    saveCustomCourse() {
+        const form = document.getElementById('customCourseForm');
+        const name = document.getElementById('courseName').value.trim();
+        const ects = document.getElementById('courseEcts').value.trim();
+        const semester = document.getElementById('courseSemester').value;
+        const category = document.getElementById('courseCategory').value;
+
+        if (!name || !ects || !semester || !category) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        const editingCourse = form.dataset.editCourse;
+        
+        if (editingCourse) {
+            // Edit existing custom course
+            const index = this.dataLoader.customCourses.findIndex(c => c.Name === editingCourse);
+            if (index !== -1) {
+                this.dataLoader.customCourses[index] = {
+                    Name: name,
+                    ECTS: `${ects} CP`,
+                    semester: semester,
+                    customCategory: category,
+                    isCustom: true,
+                    'Available in': this.getCategoryAvailability(category)
+                };
+                
+                // Update in courses list
+                const courseIndex = this.courses.findIndex(c => c.Name === editingCourse);
+                if (courseIndex !== -1) {
+                    this.courses[courseIndex] = this.dataLoader.customCourses[index];
+                }
+            }
+        } else {
+            // Check for duplicate name
+            if (this.courses.some(c => c.Name === name)) {
+                alert('A course with this name already exists');
+                return;
+            }
+
+            // Add new custom course
+            const newCourse = {
+                Name: name,
+                ECTS: `${ects} CP`,
+                semester: semester,
+                customCategory: category,
+                isCustom: true,
+                'Available in': this.getCategoryAvailability(category),
+                categories: this.getCategoryTags(category)
+            };
+
+            this.dataLoader.customCourses.push(newCourse);
+            this.courses.push(newCourse);
+        }
+
+        this.dataLoader.saveCustomCourses();
+        this.handleFilter();
+        this.closeCustomCourseModal();
+    }
+
+    getCategoryAvailability(category) {
+        const categoryMap = {
+            'thesis': [{ 
+                custom: true,
+                categoryType: 'thesis'
+            }],
+            'interdisciplinary': [{ 
+                custom: true,
+                categoryType: 'interdisciplinary'
+            }],
+            'electiveArea': [{ FoS: 'Elective Area in Mechatronics and Information Technology', subtype: 'Elective Area in Mechatronics and Information Technology' }],
+            'methodical': [{ FoS: 'Field of Specialization in Mechatronics and Information Technology / Custom', subtype: 'Mandatory Electives - Methodical' }],
+            'general': [{ FoS: 'Field of Specialization in Mechatronics and Information Technology / Custom', subtype: 'Mandatory Electives - General' }],
+            'additive': [{ FoS: 'Field of Specialization in Mechatronics and Information Technology / Custom', subtype: 'Additive Electives' }]
+        };
+
+        return categoryMap[category] || [];
+    }
+
+    getCategoryTags(category) {
+        const categoryTagMap = {
+            'thesis': ['Project'],
+            'interdisciplinary': ['General Engineering'],
+            'electiveArea': ['General Engineering'],
+            'methodical': ['Software'],
+            'general': ['General Engineering'],
+            'additive': ['General Engineering']
+        };
+
+        return categoryTagMap[category] || ['General Engineering'];
     }
 }
 
