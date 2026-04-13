@@ -142,6 +142,21 @@
     <!-- Hidden file input for import -->
     <input type="file" id="importFileInput" accept=".json" style="display: none;">
 
+    <!-- Category Details Modal -->
+    <div id="categoryDetailsModal" class="modal" onclick="if(event.target === this) planner.closeCategoryDetailsModal()">
+        <div class="modal-content category-details-modal">
+            <div class="modal-header">
+                <h3 id="categoryDetailsTitle">Category Details</h3>
+                <button class="close-btn" onclick="planner.closeCategoryDetailsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="categoryDetailsBody">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
     <script src="assets/js/planner.js"></script>
 </body>
 </html>
