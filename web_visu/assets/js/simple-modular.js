@@ -811,10 +811,23 @@ class CourseGrid {
                     ${categories.map(cat => `<span class="category-tag">${cat}</span>`).join('')}
                 </div>
                 
-                <button class="view-pdf-btn" onclick="courseCatalog.viewPDF('${course.pdf_link}', '${course.Name}')">
-                    <i class="fas fa-file-pdf"></i>
-                    View Course Details
-                </button>
+                ${isCustom ? `
+                    <div class="custom-course-actions">
+                        <button class="edit-custom-course-btn" onclick="courseCatalog.editCustomCourse('${course.Name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-edit"></i>
+                            Edit Course
+                        </button>
+                        <button class="delete-custom-course-btn" onclick="courseCatalog.deleteCustomCourse('${course.Name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                        </button>
+                    </div>
+                ` : `
+                    <button class="view-pdf-btn" onclick="courseCatalog.viewPDF('${course.pdf_link}', '${course.Name}')">
+                        <i class="fas fa-file-pdf"></i>
+                        View Course Details
+                    </button>
+                `}
             </div>
         `;
     }
@@ -1347,7 +1360,8 @@ class CourseCatalog {
                     semester: semester,
                     customCategory: category,
                     isCustom: true,
-                    'Available in': this.getCategoryAvailability(category)
+                    'Available in': this.getCategoryAvailability(category),
+                    categories: this.getCategoryTags(category)
                 };
                 
                 // Update in courses list
@@ -1373,6 +1387,8 @@ class CourseCatalog {
                 'Available in': this.getCategoryAvailability(category),
                 categories: this.getCategoryTags(category)
             };
+
+            console.log('Creating new custom course:', newCourse);
 
             this.dataLoader.customCourses.push(newCourse);
             this.courses.push(newCourse);
@@ -1413,6 +1429,28 @@ class CourseCatalog {
         };
 
         return categoryTagMap[category] || ['General Engineering'];
+    }
+
+    // Edit custom course
+    editCustomCourse(courseName) {
+        const course = this.dataLoader.customCourses.find(c => c.Name === courseName);
+        if (course) {
+            this.openCustomCourseModal(course);
+        }
+    }
+
+    // Delete custom course
+    deleteCustomCourse(courseName) {
+        if (!confirm(`Are you sure you want to delete "${courseName}"?`)) {
+            return;
+        }
+
+        // Remove from custom courses
+        this.dataLoader.customCourses = this.dataLoader.customCourses.filter(c => c.Name !== courseName);
+        this.courses = this.courses.filter(c => c.Name !== courseName);
+
+        this.dataLoader.saveCustomCourses();
+        this.handleFilter();
     }
 }
 
