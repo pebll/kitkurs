@@ -61,3 +61,38 @@
 .current-program i {
     color: var(--accent-color);
 }
+
+/* Navigation */
+.main-nav {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    justify-content: center;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-xl);
+    background: var(--card-background);
+    border: 2px solid var(--dark-border);
+    border-radius: var(--border-radius);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+    transition: all var(--transition-normal);
+}
+
+.nav-link:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-white);
+    transform: translateY(-2px);
+}
+
+.nav-link.active {
+    background: var(--primary-gradient);
+    border-color: var(--kit-green);
+    color: var(--text-white);
+}
