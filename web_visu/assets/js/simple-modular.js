@@ -53,9 +53,57 @@ const CONSTANTS = {
         PDF_MODAL: '#pdfModal',
         PDF_VIEWER: '#pdfViewer',
         PDF_TITLE: '#pdfTitle',
-        CLOSE_PDF_MODAL: '#closePdfModal'
+        CLOSE_PDF_MODAL: '#closePdfModal',
+        SHOW_FAVORITES_ONLY: '#showFavoritesOnly'
+    },
+    STORAGE_KEYS: {
+        FAVORITES: 'kitkurs_favorites'
     }
 };
+
+// Favorites Manager Module
+class FavoritesManager {
+    constructor() {
+        this.favorites = this.loadFavorites();
+    }
+
+    loadFavorites() {
+        try {
+            const stored = localStorage.getItem(CONSTANTS.STORAGE_KEYS.FAVORITES);
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error loading favorites:', error);
+            return [];
+        }
+    }
+
+    saveFavorites() {
+        try {
+            localStorage.setItem(CONSTANTS.STORAGE_KEYS.FAVORITES, JSON.stringify(this.favorites));
+        } catch (error) {
+            console.error('Error saving favorites:', error);
+        }
+    }
+
+    isFavorite(courseName) {
+        return this.favorites.includes(courseName);
+    }
+
+    toggleFavorite(courseName) {
+        const index = this.favorites.indexOf(courseName);
+        if (index === -1) {
+            this.favorites.push(courseName);
+        } else {
+            this.favorites.splice(index, 1);
+        }
+        this.saveFavorites();
+        return this.isFavorite(courseName);
+    }
+
+    getFavorites() {
+        return [...this.favorites];
+    }
+}
 
 // Data Loader Module
 class DataLoader {
@@ -533,8 +581,14 @@ class CourseGrid {
             availabilityDisplay += `<br><em>(+${hiddenItems.length} more)</em>`;
         }
         
+        const isFavorite = this.courseCatalog.favoritesManager.isFavorite(course.Name);
+        const starClass = isFavorite ? 'starred' : '';
+        
         return `
-            <div class="course-card">
+            <div class="course-card" data-course-name="${course.Name}">
+                <button class="star-btn ${starClass}" onclick="courseCatalog.toggleFavorite('${course.Name.replace(/'/g, "\\'")}', this)" title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
+                    <i class="fas fa-star"></i>
+                </button>
                 <h3 class="course-title">${course.Name}</h3>
                 
                 <div class="course-details">
@@ -688,6 +742,7 @@ class CourseCatalog {
         
         // Initialize components
         this.dataLoader = new DataLoader();
+        this.favoritesManager = new FavoritesManager();
         this.searchComponent = new SearchComponent(this);
         this.filterComponent = new FilterComponent(this);
         this.courseGrid = new CourseGrid(this);
@@ -752,6 +807,14 @@ class CourseCatalog {
             });
         }
 
+        // Favorites toggle
+        const showFavoritesOnly = document.querySelector(CONSTANTS.SELECTORS.SHOW_FAVORITES_ONLY);
+        if (showFavoritesOnly) {
+            showFavoritesOnly.addEventListener('change', () => {
+                this.handleFilter();
+            });
+        }
+
         // Checkbox event listeners
         document.addEventListener('change', (e) => {
             if (e.target.type === 'checkbox' && e.target.dataset.type) {
@@ -781,8 +844,16 @@ class CourseCatalog {
 
     handleFilter() {
         const searchTerm = this.searchComponent.getSearchTerm();
+        const showFavoritesOnly = document.querySelector(CONSTANTS.SELECTORS.SHOW_FAVORITES_ONLY);
         
         this.filteredCourses = this.courses.filter(course => {
+            // Check favorites filter first
+            if (showFavoritesOnly && showFavoritesOnly.checked) {
+                if (!this.favoritesManager.isFavorite(course.Name)) {
+                    return false;
+                }
+            }
+            
             return this.filterComponent.matchesFilters(course, searchTerm);
         });
 
@@ -945,6 +1016,23 @@ class CourseCatalog {
 
     toggleAvailability(button, availabilityList) {
         this.courseGrid.toggleAvailability(button, availabilityList);
+    }
+
+    toggleFavorite(courseName, button) {
+        const isFavorite = this.favoritesManager.toggleFavorite(courseName);
+        
+        if (isFavorite) {
+            button.classList.add('starred');
+            button.title = 'Remove from favorites';
+        } else {
+            button.classList.remove('starred');
+            button.title = 'Add to favorites';
+        }
+        
+        const showFavoritesOnly = document.querySelector(CONSTANTS.SELECTORS.SHOW_FAVORITES_ONLY);
+        if (showFavoritesOnly && showFavoritesOnly.checked) {
+            this.handleFilter();
+        }
     }
 }
 
