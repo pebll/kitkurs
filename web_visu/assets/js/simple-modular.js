@@ -53,14 +53,185 @@ const CONSTANTS = {
         PDF_MODAL: '#pdfModal',
         PDF_VIEWER: '#pdfViewer',
         PDF_TITLE: '#pdfTitle',
-        CLOSE_PDF_MODAL: '#closePdfModal'
+        CLOSE_PDF_MODAL: '#closePdfModal',
+        SHOW_FAVORITES_ONLY: '#showFavoritesOnly',
+        HIDE_NOT_INTERESTED: '#hideNotInterested'
+    },
+    STORAGE_KEYS: {
+        FAVORITES: 'kitkurs_favorites',
+        NOT_INTERESTED: 'kitkurs_not_interested',
+        CUSTOM_COURSES: 'kitkurs_custom_courses'
+    },
+    // Course category helpers
+    COURSE_CATEGORIES: {
+        isThesis: (course) => {
+            return course.Name === 'Master\'s Thesis' || 
+                   (course.isCustom && course.customCategory === 'thesis');
+        },
+        isInterdisciplinary: (course) => {
+            return course.Name === 'Interdisciplinary Qualifications' || 
+                   (course.isCustom && course.customCategory === 'interdisciplinary');
+        },
+        isElectiveArea: (course) => {
+            if (course.isCustom && course.customCategory === 'electiveArea') return true;
+            return Array.isArray(course['Available in']) && 
+                   course['Available in'].some(avail => 
+                       avail.FoS && avail.FoS.includes('Elective Area')
+                   );
+        },
+        isFosMethodical: (course, fosFilter = null) => {
+            if (course.isCustom && course.customCategory === 'methodical') return true;
+            if (!Array.isArray(course['Available in'])) return false;
+            return course['Available in'].some(avail => {
+                if (!avail.subtype || !avail.subtype.includes('Mandatory Electives - Methodical')) return false;
+                if (fosFilter && avail.FoS) {
+                    return avail.FoS === fosFilter || avail.FoS.includes('Custom');
+                }
+                return true;
+            });
+        },
+        isFosGeneral: (course, fosFilter = null) => {
+            if (course.isCustom && course.customCategory === 'general') return true;
+            if (!Array.isArray(course['Available in'])) return false;
+            return course['Available in'].some(avail => {
+                if (!avail.subtype || !avail.subtype.includes('Mandatory Electives - General')) return false;
+                if (fosFilter && avail.FoS) {
+                    return avail.FoS === fosFilter || avail.FoS.includes('Custom');
+                }
+                return true;
+            });
+        },
+        isFosAdditive: (course, fosFilter = null) => {
+            if (course.isCustom && course.customCategory === 'additive') return true;
+            if (!Array.isArray(course['Available in'])) return false;
+            return course['Available in'].some(avail => {
+                if (!avail.subtype || !avail.subtype.includes('Additive Electives')) return false;
+                if (fosFilter && avail.FoS) {
+                    return avail.FoS === fosFilter || avail.FoS.includes('Custom');
+                }
+                return true;
+            });
+        }
     }
 };
+
+// Favorites Manager Module
+class FavoritesManager {
+    constructor() {
+        this.favorites = this.loadFavorites();
+        this.notInterested = this.loadNotInterested();
+    }
+
+    loadFavorites() {
+        try {
+            const stored = localStorage.getItem(CONSTANTS.STORAGE_KEYS.FAVORITES);
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error loading favorites:', error);
+            return [];
+        }
+    }
+
+    loadNotInterested() {
+        try {
+            const stored = localStorage.getItem(CONSTANTS.STORAGE_KEYS.NOT_INTERESTED);
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error loading not interested:', error);
+            return [];
+        }
+    }
+
+    saveFavorites() {
+        try {
+            localStorage.setItem(CONSTANTS.STORAGE_KEYS.FAVORITES, JSON.stringify(this.favorites));
+        } catch (error) {
+            console.error('Error saving favorites:', error);
+        }
+    }
+
+    saveNotInterested() {
+        try {
+            localStorage.setItem(CONSTANTS.STORAGE_KEYS.NOT_INTERESTED, JSON.stringify(this.notInterested));
+        } catch (error) {
+            console.error('Error saving not interested:', error);
+        }
+    }
+
+    isFavorite(courseName) {
+        return this.favorites.includes(courseName);
+    }
+
+    isNotInterested(courseName) {
+        return this.notInterested.includes(courseName);
+    }
+
+    toggleFavorite(courseName) {
+        const index = this.favorites.indexOf(courseName);
+        if (index === -1) {
+            this.favorites.push(courseName);
+            // Remove from not interested if it was there
+            const notIntIndex = this.notInterested.indexOf(courseName);
+            if (notIntIndex !== -1) {
+                this.notInterested.splice(notIntIndex, 1);
+                this.saveNotInterested();
+            }
+        } else {
+            this.favorites.splice(index, 1);
+        }
+        this.saveFavorites();
+        return this.isFavorite(courseName);
+    }
+
+    toggleNotInterested(courseName) {
+        const index = this.notInterested.indexOf(courseName);
+        if (index === -1) {
+            this.notInterested.push(courseName);
+            // Remove from favorites if it was there
+            const favIndex = this.favorites.indexOf(courseName);
+            if (favIndex !== -1) {
+                this.favorites.splice(favIndex, 1);
+                this.saveFavorites();
+            }
+        } else {
+            this.notInterested.splice(index, 1);
+        }
+        this.saveNotInterested();
+        return this.isNotInterested(courseName);
+    }
+
+    getFavorites() {
+        return [...this.favorites];
+    }
+
+    getNotInterested() {
+        return [...this.notInterested];
+    }
+}
 
 // Data Loader Module
 class DataLoader {
     constructor() {
         this.courses = [];
+        this.customCourses = this.loadCustomCourses();
+    }
+
+    loadCustomCourses() {
+        try {
+            const stored = localStorage.getItem(CONSTANTS.STORAGE_KEYS.CUSTOM_COURSES);
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error loading custom courses:', error);
+            return [];
+        }
+    }
+
+    saveCustomCourses() {
+        try {
+            localStorage.setItem(CONSTANTS.STORAGE_KEYS.CUSTOM_COURSES, JSON.stringify(this.customCourses));
+        } catch (error) {
+            console.error('Error saving custom courses:', error);
+        }
     }
 
     async loadCourses() {
@@ -69,8 +240,9 @@ class DataLoader {
             if (!response.ok) {
                 throw new Error('Failed to fetch courses');
             }
-            this.courses = await response.json();
-            console.log(`Loaded ${this.courses.length} courses`);
+            const fetchedCourses = await response.json();
+            this.courses = [...fetchedCourses, ...this.customCourses];
+            console.log(`Loaded ${fetchedCourses.length} courses + ${this.customCourses.length} custom courses`);
             return this.courses;
         } catch (error) {
             console.error('Error loading courses:', error);
@@ -324,8 +496,15 @@ class FilterComponent {
     }
 
     matchesFilters(course, searchTerm) {
+        // Debug logging for custom courses
+        const isCustom = course.isCustom;
+        if (isCustom) {
+            console.log(`[FILTER DEBUG] Checking custom course: "${course.Name}", category: ${course.customCategory}`);
+        }
+
         // Search filter
         if (searchTerm && !course.Name.toLowerCase().includes(searchTerm)) {
+            if (isCustom) console.log(`  → Filtered by SEARCH: "${searchTerm}"`);
             return false;
         }
 
@@ -339,6 +518,7 @@ class FilterComponent {
                 courseCategories = this.extractCategories(course.Name);
             }
             if (!courseCategories.includes(categoryFilter.value)) {
+                if (isCustom) console.log(`  → Filtered by CATEGORY: needs "${categoryFilter.value}", has:`, courseCategories);
                 return false;
             }
         }
@@ -348,24 +528,23 @@ class FilterComponent {
         if (semesterFilter && semesterFilter.value) {
             const selectedSemester = semesterFilter.value;
             if (!course.semester) {
+                if (isCustom) console.log(`  → Filtered by SEMESTER: no semester defined`);
                 return false;
             }
             
-            // WS should include WS and WS/SS
-            // SS should include SS and WS/SS
-            // WS/SS only matches WS/SS
-            // Irregular only matches Irregular
             if (selectedSemester === 'WS') {
                 if (course.semester !== 'WS' && course.semester !== 'WS/SS') {
+                    if (isCustom) console.log(`  → Filtered by SEMESTER: needs WS, has ${course.semester}`);
                     return false;
                 }
             } else if (selectedSemester === 'SS') {
                 if (course.semester !== 'SS' && course.semester !== 'WS/SS') {
+                    if (isCustom) console.log(`  → Filtered by SEMESTER: needs SS, has ${course.semester}`);
                     return false;
                 }
             } else {
-                // Exact match for WS/SS and Irregular
                 if (course.semester !== selectedSemester) {
+                    if (isCustom) console.log(`  → Filtered by SEMESTER: needs ${selectedSemester}, has ${course.semester}`);
                     return false;
                 }
             }
@@ -374,20 +553,31 @@ class FilterComponent {
         // FoS filter
         const fosFilter = document.querySelector(CONSTANTS.SELECTORS.FOS_FILTER);
         if (fosFilter && fosFilter.value) {
-            const isElectiveAreaCourse = Array.isArray(course['Available in']) && 
-                course['Available in'].some(avail => 
-                    avail.FoS && avail.FoS.includes('Elective Area')
-                );
+            // Thesis, Interdisciplinary, and Elective Area courses are exempt from FoS filter
+            // because they're not FoS-specific
+            const isExemptFromFos = CONSTANTS.COURSE_CATEGORIES.isThesis(course) ||
+                                    CONSTANTS.COURSE_CATEGORIES.isInterdisciplinary(course) ||
+                                    CONSTANTS.COURSE_CATEGORIES.isElectiveArea(course);
             
-            if (!isElectiveAreaCourse) {
-                let matchesFos = false;
-                if (Array.isArray(course['Available in'])) {
-                    matchesFos = course['Available in'].some(avail => 
-                        avail.FoS && avail.FoS === fosFilter.value && !avail.FoS.includes('Elective Area')
+            if (isExemptFromFos) {
+                if (isCustom) console.log(`  → EXEMPT from FoS filter (thesis/interdisciplinary/elective)`);
+            } else {
+                const isElectiveAreaCourse = Array.isArray(course['Available in']) && 
+                    course['Available in'].some(avail => 
+                        avail.FoS && avail.FoS.includes('Elective Area')
                     );
-                }
-                if (!matchesFos) {
-                    return false;
+                
+                if (!isElectiveAreaCourse) {
+                    let matchesFos = false;
+                    if (Array.isArray(course['Available in'])) {
+                        matchesFos = course['Available in'].some(avail => 
+                            avail.FoS && avail.FoS === fosFilter.value && !avail.FoS.includes('Elective Area')
+                        );
+                    }
+                    if (!matchesFos) {
+                        if (isCustom) console.log(`  → Filtered by FOS: needs "${fosFilter.value}"`);
+                        return false;
+                    }
                 }
             }
         }
@@ -395,6 +585,19 @@ class FilterComponent {
         // Course type filters
         const selectedFosCategories = this.getSelectedCheckboxes('fosCategory');
         const selectedGeneral = this.getSelectedCheckboxes('general');
+
+        if (isCustom) {
+            console.log(`  → Course type filters:`, {
+                selectedFosCategories,
+                selectedGeneral
+            });
+        }
+
+        // If no course type filters are selected, return true (show everything)
+        if (selectedFosCategories.length === 0 && selectedGeneral.length === 0) {
+            if (isCustom) console.log(`  → PASS: No course type filters selected`);
+            return true;
+        }
 
         let matchesAnyCourseType = false;
 
@@ -412,34 +615,57 @@ class FilterComponent {
                     matchesAnyCourseType = true;
                 }
             }
+            
+            // Also check custom FoS courses
+            if (course.isCustom) {
+                if (course.customCategory === 'methodical' && selectedFosCategories.includes('Mandatory Electives - Methodical')) {
+                    if (isCustom) console.log(`  → MATCHED: FoS Methodical (custom)`);
+                    matchesAnyCourseType = true;
+                }
+                if (course.customCategory === 'general' && selectedFosCategories.includes('Mandatory Electives - General')) {
+                    if (isCustom) console.log(`  → MATCHED: FoS General (custom)`);
+                    matchesAnyCourseType = true;
+                }
+                if (course.customCategory === 'additive' && selectedFosCategories.includes('Additive Electives')) {
+                    if (isCustom) console.log(`  → MATCHED: FoS Additive (custom)`);
+                    matchesAnyCourseType = true;
+                }
+            }
         }
 
         // Check Program components
         if (selectedGeneral.length > 0) {
+            if (isCustom) console.log(`  → Checking general categories:`, selectedGeneral);
+            
             const matchesGeneral = selectedGeneral.some(general => {
-                if (general.includes('Master\'s Thesis') && course.Name === 'Master\'s Thesis') {
-                    return true;
+                if (general.includes('Master\'s Thesis')) {
+                    const matches = CONSTANTS.COURSE_CATEGORIES.isThesis(course);
+                    if (isCustom) console.log(`    - Thesis check: ${matches}`);
+                    return matches;
                 }
-                if (general.includes('Interdisciplinary Qualifications') && course.Name === 'Interdisciplinary Qualifications') {
-                    return true;
+                if (general.includes('Interdisciplinary Qualifications')) {
+                    const matches = CONSTANTS.COURSE_CATEGORIES.isInterdisciplinary(course);
+                    if (isCustom) console.log(`    - Interdisciplinary check: ${matches} (category: ${course.customCategory})`);
+                    return matches;
                 }
-                if (general.includes('Elective Area') && Array.isArray(course['Available in'])) {
-                    return course['Available in'].some(avail => 
-                        avail.FoS && avail.FoS.includes('Elective Area')
-                    );
+                if (general.includes('Elective Area')) {
+                    const matches = CONSTANTS.COURSE_CATEGORIES.isElectiveArea(course);
+                    if (isCustom) console.log(`    - Elective Area check: ${matches}`);
+                    return matches;
                 }
                 return false;
             });
             if (matchesGeneral) {
+                if (isCustom) console.log(`  → MATCHED: General category`);
                 matchesAnyCourseType = true;
             }
         }
 
-        if (selectedFosCategories.length > 0 || selectedGeneral.length > 0) {
-            return matchesAnyCourseType;
+        if (isCustom) {
+            console.log(`  → Final result: ${matchesAnyCourseType ? 'PASS' : 'FAIL'}`);
         }
 
-        return false;
+        return matchesAnyCourseType;
     }
 }
 
@@ -533,8 +759,23 @@ class CourseGrid {
             availabilityDisplay += `<br><em>(+${hiddenItems.length} more)</em>`;
         }
         
+        const isFavorite = this.courseCatalog.favoritesManager.isFavorite(course.Name);
+        const isNotInterested = this.courseCatalog.favoritesManager.isNotInterested(course.Name);
+        const starClass = isFavorite ? 'starred' : '';
+        const notInterestedClass = isNotInterested ? 'not-interested' : '';
+        const isCustom = course.isCustom || false;
+        
         return `
-            <div class="course-card">
+            <div class="course-card ${isNotInterested ? 'dimmed' : ''} ${isCustom ? 'custom-course' : ''}" data-course-name="${course.Name}">
+                <div class="course-actions-top">
+                    <button class="star-btn ${starClass}" onclick="courseCatalog.toggleFavorite('${course.Name.replace(/'/g, "\\'")}', this)" title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
+                        <i class="fas fa-star"></i>
+                    </button>
+                    <button class="not-interested-btn ${notInterestedClass}" onclick="courseCatalog.toggleNotInterested('${course.Name.replace(/'/g, "\\'")}', this)" title="${isNotInterested ? 'Mark as interested' : 'Not interested'}">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+                ${isCustom ? '<span class="custom-badge-card">Custom</span>' : ''}
                 <h3 class="course-title">${course.Name}</h3>
                 
                 <div class="course-details">
@@ -570,10 +811,23 @@ class CourseGrid {
                     ${categories.map(cat => `<span class="category-tag">${cat}</span>`).join('')}
                 </div>
                 
-                <button class="view-pdf-btn" onclick="courseCatalog.viewPDF('${course.pdf_link}', '${course.Name}')">
-                    <i class="fas fa-file-pdf"></i>
-                    View Course Details
-                </button>
+                ${isCustom ? `
+                    <div class="custom-course-actions">
+                        <button class="edit-custom-course-btn" onclick="courseCatalog.editCustomCourse('${course.Name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-edit"></i>
+                            Edit Course
+                        </button>
+                        <button class="delete-custom-course-btn" onclick="courseCatalog.deleteCustomCourse('${course.Name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                        </button>
+                    </div>
+                ` : `
+                    <button class="view-pdf-btn" onclick="courseCatalog.viewPDF('${course.pdf_link}', '${course.Name}')">
+                        <i class="fas fa-file-pdf"></i>
+                        View Course Details
+                    </button>
+                `}
             </div>
         `;
     }
@@ -688,6 +942,7 @@ class CourseCatalog {
         
         // Initialize components
         this.dataLoader = new DataLoader();
+        this.favoritesManager = new FavoritesManager();
         this.searchComponent = new SearchComponent(this);
         this.filterComponent = new FilterComponent(this);
         this.courseGrid = new CourseGrid(this);
@@ -702,7 +957,7 @@ class CourseCatalog {
             this.setupEventListeners();
             this.filterComponent.populateFilters();
             this.filterComponent.setDefaultFilters();
-            this.renderCourses();
+            this.handleFilter(); // Apply filters after setting defaults
         } catch (error) {
             console.error('Error initializing course catalog:', error);
             Utils.showError('Failed to load courses. Please refresh the page.');
@@ -714,7 +969,18 @@ class CourseCatalog {
             this.courses = await this.dataLoader.loadCourses();
             this.filteredCourses = [...this.courses];
             this.filterComponent.extractFilterOptions(this.courses);
-            console.log(`Loaded ${this.courses.length} courses`);
+            console.log(`CourseCatalog: Total courses loaded: ${this.courses.length}`);
+            
+            // Debug: log custom courses
+            const customCourses = this.courses.filter(c => c.isCustom);
+            if (customCourses.length > 0) {
+                console.log('CourseCatalog: Custom courses found:', customCourses.map(c => ({
+                    name: c.Name,
+                    category: c.customCategory,
+                    isCustom: c.isCustom,
+                    availableIn: c['Available in']
+                })));
+            }
         } catch (error) {
             console.error('Error loading courses:', error);
             throw error;
@@ -752,6 +1018,22 @@ class CourseCatalog {
             });
         }
 
+        // Favorites toggle
+        const showFavoritesOnly = document.querySelector(CONSTANTS.SELECTORS.SHOW_FAVORITES_ONLY);
+        if (showFavoritesOnly) {
+            showFavoritesOnly.addEventListener('change', () => {
+                this.handleFilter();
+            });
+        }
+
+        // Hide not interested toggle
+        const hideNotInterested = document.querySelector(CONSTANTS.SELECTORS.HIDE_NOT_INTERESTED);
+        if (hideNotInterested) {
+            hideNotInterested.addEventListener('change', () => {
+                this.handleFilter();
+            });
+        }
+
         // Checkbox event listeners
         document.addEventListener('change', (e) => {
             if (e.target.type === 'checkbox' && e.target.dataset.type) {
@@ -781,11 +1063,38 @@ class CourseCatalog {
 
     handleFilter() {
         const searchTerm = this.searchComponent.getSearchTerm();
+        const showFavoritesOnly = document.querySelector(CONSTANTS.SELECTORS.SHOW_FAVORITES_ONLY);
+        const hideNotInterested = document.querySelector(CONSTANTS.SELECTORS.HIDE_NOT_INTERESTED);
+        
+        console.log('handleFilter: Starting filter with', this.courses.length, 'total courses');
         
         this.filteredCourses = this.courses.filter(course => {
-            return this.filterComponent.matchesFilters(course, searchTerm);
+            // Check favorites filter first
+            if (showFavoritesOnly && showFavoritesOnly.checked) {
+                if (!this.favoritesManager.isFavorite(course.Name)) {
+                    return false;
+                }
+            }
+            
+            // Check hide not interested filter
+            if (hideNotInterested && hideNotInterested.checked) {
+                if (this.favoritesManager.isNotInterested(course.Name)) {
+                    return false;
+                }
+            }
+            
+            const matches = this.filterComponent.matchesFilters(course, searchTerm);
+            
+            // Debug custom courses
+            if (course.isCustom && !matches) {
+                console.log('Custom course filtered out:', course.Name, 'Category:', course.customCategory);
+            }
+            
+            return matches;
         });
 
+        console.log('handleFilter: Filtered to', this.filteredCourses.length, 'courses');
+        
         this.renderCourses();
         this.updateDynamicCounts();
     }
@@ -945,6 +1254,203 @@ class CourseCatalog {
 
     toggleAvailability(button, availabilityList) {
         this.courseGrid.toggleAvailability(button, availabilityList);
+    }
+
+    toggleFavorite(courseName, button) {
+        const isFavorite = this.favoritesManager.toggleFavorite(courseName);
+        
+        if (isFavorite) {
+            button.classList.add('starred');
+            button.title = 'Remove from favorites';
+        } else {
+            button.classList.remove('starred');
+            button.title = 'Add to favorites';
+        }
+        
+        const showFavoritesOnly = document.querySelector(CONSTANTS.SELECTORS.SHOW_FAVORITES_ONLY);
+        if (showFavoritesOnly && showFavoritesOnly.checked) {
+            this.handleFilter();
+        }
+        
+        // Update not interested button if it exists
+        const card = button.closest('.course-card');
+        const notIntBtn = card.querySelector('.not-interested-btn');
+        if (notIntBtn && notIntBtn.classList.contains('not-interested')) {
+            notIntBtn.classList.remove('not-interested');
+            notIntBtn.title = 'Not interested';
+            card.classList.remove('dimmed');
+        }
+    }
+
+    toggleNotInterested(courseName, button) {
+        const isNotInterested = this.favoritesManager.toggleNotInterested(courseName);
+        
+        const card = button.closest('.course-card');
+        
+        if (isNotInterested) {
+            button.classList.add('not-interested');
+            button.title = 'Mark as interested';
+            card.classList.add('dimmed');
+        } else {
+            button.classList.remove('not-interested');
+            button.title = 'Not interested';
+            card.classList.remove('dimmed');
+        }
+        
+        // Update star button if it exists
+        const starBtn = card.querySelector('.star-btn');
+        if (starBtn && starBtn.classList.contains('starred')) {
+            starBtn.classList.remove('starred');
+            starBtn.title = 'Add to favorites';
+        }
+    }
+
+    // Custom course methods
+    openCustomCourseModal(editCourse = null) {
+        const modal = document.getElementById('customCourseModal');
+        const form = document.getElementById('customCourseForm');
+        const modalTitle = document.getElementById('customCourseModalTitle');
+        
+        if (!modal || !form) return;
+
+        if (editCourse) {
+            modalTitle.textContent = 'Edit Custom Course';
+            document.getElementById('courseName').value = editCourse.Name;
+            document.getElementById('courseEcts').value = parseInt(editCourse.ECTS);
+            document.getElementById('courseSemester').value = editCourse.semester || '';
+            document.getElementById('courseCategory').value = editCourse.customCategory || '';
+            form.dataset.editCourse = editCourse.Name;
+        } else {
+            modalTitle.textContent = 'Add Custom Course';
+            form.reset();
+            delete form.dataset.editCourse;
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    closeCustomCourseModal() {
+        const modal = document.getElementById('customCourseModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    saveCustomCourse() {
+        const form = document.getElementById('customCourseForm');
+        const name = document.getElementById('courseName').value.trim();
+        const ects = document.getElementById('courseEcts').value.trim();
+        const semester = document.getElementById('courseSemester').value;
+        const category = document.getElementById('courseCategory').value;
+
+        if (!name || !ects || !semester || !category) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        const editingCourse = form.dataset.editCourse;
+        
+        if (editingCourse) {
+            // Edit existing custom course
+            const index = this.dataLoader.customCourses.findIndex(c => c.Name === editingCourse);
+            if (index !== -1) {
+                this.dataLoader.customCourses[index] = {
+                    Name: name,
+                    ECTS: `${ects} CP`,
+                    semester: semester,
+                    customCategory: category,
+                    isCustom: true,
+                    'Available in': this.getCategoryAvailability(category),
+                    categories: this.getCategoryTags(category)
+                };
+                
+                // Update in courses list
+                const courseIndex = this.courses.findIndex(c => c.Name === editingCourse);
+                if (courseIndex !== -1) {
+                    this.courses[courseIndex] = this.dataLoader.customCourses[index];
+                }
+            }
+        } else {
+            // Check for duplicate name
+            if (this.courses.some(c => c.Name === name)) {
+                alert('A course with this name already exists');
+                return;
+            }
+
+            // Add new custom course
+            const newCourse = {
+                Name: name,
+                ECTS: `${ects} CP`,
+                semester: semester,
+                customCategory: category,
+                isCustom: true,
+                'Available in': this.getCategoryAvailability(category),
+                categories: this.getCategoryTags(category)
+            };
+
+            console.log('Creating new custom course:', newCourse);
+
+            this.dataLoader.customCourses.push(newCourse);
+            this.courses.push(newCourse);
+        }
+
+        this.dataLoader.saveCustomCourses();
+        this.handleFilter();
+        this.closeCustomCourseModal();
+    }
+
+    getCategoryAvailability(category) {
+        const categoryMap = {
+            'thesis': [{ 
+                custom: true,
+                categoryType: 'thesis'
+            }],
+            'interdisciplinary': [{ 
+                custom: true,
+                categoryType: 'interdisciplinary'
+            }],
+            'electiveArea': [{ FoS: 'Elective Area in Mechatronics and Information Technology', subtype: 'Elective Area in Mechatronics and Information Technology' }],
+            'methodical': [{ FoS: 'Field of Specialization in Mechatronics and Information Technology / Custom', subtype: 'Mandatory Electives - Methodical' }],
+            'general': [{ FoS: 'Field of Specialization in Mechatronics and Information Technology / Custom', subtype: 'Mandatory Electives - General' }],
+            'additive': [{ FoS: 'Field of Specialization in Mechatronics and Information Technology / Custom', subtype: 'Additive Electives' }]
+        };
+
+        return categoryMap[category] || [];
+    }
+
+    getCategoryTags(category) {
+        const categoryTagMap = {
+            'thesis': ['Project'],
+            'interdisciplinary': ['General Engineering'],
+            'electiveArea': ['General Engineering'],
+            'methodical': ['Software'],
+            'general': ['General Engineering'],
+            'additive': ['General Engineering']
+        };
+
+        return categoryTagMap[category] || ['General Engineering'];
+    }
+
+    // Edit custom course
+    editCustomCourse(courseName) {
+        const course = this.dataLoader.customCourses.find(c => c.Name === courseName);
+        if (course) {
+            this.openCustomCourseModal(course);
+        }
+    }
+
+    // Delete custom course
+    deleteCustomCourse(courseName) {
+        if (!confirm(`Are you sure you want to delete "${courseName}"?`)) {
+            return;
+        }
+
+        // Remove from custom courses
+        this.dataLoader.customCourses = this.dataLoader.customCourses.filter(c => c.Name !== courseName);
+        this.courses = this.courses.filter(c => c.Name !== courseName);
+
+        this.dataLoader.saveCustomCourses();
+        this.handleFilter();
     }
 }
 

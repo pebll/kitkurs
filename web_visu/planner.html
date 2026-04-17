@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Planner</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/planner.css">
+</head>
+<body>
+    <div class="container planner-container">
+        <header class="header">
+            <h1><i class="fas fa-calendar-alt"></i> Course Planner</h1>
+            <p>Plan your semester schedule and track your progress</p>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-th-large"></i> Course Catalog
+                </a>
+                <a href="planner.html" class="nav-link active">
+                    <i class="fas fa-calendar-alt"></i> Planner
+                </a>
+            </nav>
+        </header>
+
+        <div class="planner-layout">
+            <!-- Left Sidebar: Course List -->
+            <aside class="course-sidebar">
+                <div class="sidebar-header">
+                    <h2><i class="fas fa-book"></i> Available Courses</h2>
+                    <button class="refresh-btn" onclick="planner.loadCourses()" title="Reload courses">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+
+                <div class="sidebar-filters">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="sidebarSearch" placeholder="Search courses...">
+                    </div>
+
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all" onclick="planner.filterCourses('all')">
+                            <i class="fas fa-list"></i> All
+                        </button>
+                        <button class="filter-btn" data-filter="favorites" onclick="planner.filterCourses('favorites')">
+                            <i class="fas fa-star"></i> Favorites
+                        </button>
+                    </div>
+
+                    <div class="semester-filter">
+                        <label for="sidebarSemesterFilter">Semester:</label>
+                        <select id="sidebarSemesterFilter" onchange="planner.filterCourses()">
+                            <option value="">All</option>
+                            <option value="WS">Winter (WS)</option>
+                            <option value="SS">Summer (SS)</option>
+                            <option value="WS/SS">Both (WS/SS)</option>
+                            <option value="Irregular">Irregular</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="course-list" id="courseList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading courses...</p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center: Semester Columns -->
+            <main class="semester-grid">
+                <div class="semester-controls">
+                    <div class="controls-header">
+                        <h2><i class="fas fa-calendar-week"></i> Semester Plan</h2>
+                        <div class="fos-selection">
+                            <label for="fosSpecialization">My FoS:</label>
+                            <select id="fosSpecialization" onchange="planner.setFosSpecialization(this.value)">
+                                <option value="">Select Field of Specialization</option>
+                                <option value="Autonomous Systems and Al">Autonomous Systems and AI</option>
+                                <option value="Automation, Control, and Robotics">Automation, Control, and Robotics</option>
+                                <option value="Industrial Informatics and Systems Engineering">Industrial Informatics and Systems Engineering</option>
+                                <option value="Lightweight Technologies">Lightweight Technologies</option>
+                                <option value="Micro System Technology">Micro System Technology</option>
+                                <option value="Mobile Systems">Mobile Systems</option>
+                                <option value="Optics">Optics</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-buttons">
+                        <button class="control-btn" onclick="planner.addSemester()" title="Add semester">
+                            <i class="fas fa-plus"></i> Add Semester
+                        </button>
+                        <button class="control-btn secondary" onclick="planner.clearAllSemesters()" title="Clear all semesters">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <div class="semesters-container" id="semestersContainer">
+                    <!-- Semester columns will be dynamically generated -->
+                </div>
+            </main>
+
+            <!-- Right Sidebar: Progress Tracker -->
+            <aside class="progress-sidebar">
+                <div class="sidebar-header">
+                    <h2><i class="fas fa-chart-line"></i> Progress</h2>
+                </div>
+
+                <div class="progress-content">
+                    <div class="total-ects">
+                        <h3>Total ECTS</h3>
+                        <div class="ects-display">
+                            <span class="current-ects" id="totalEcts">0</span>
+                            <span class="ects-separator">/</span>
+                            <span class="required-ects">120</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="totalProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="category-progress" id="categoryProgress">
+                        <h3>Category Requirements</h3>
+                        <p class="info-text">Add courses to see progress breakdown</p>
+                    </div>
+                </div>
+
+                <div class="planner-actions">
+                    <button class="action-btn primary" onclick="planner.exportPlan()" title="Export as JSON">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <button class="action-btn primary" onclick="planner.importPlan()" title="Import from JSON">
+                        <i class="fas fa-upload"></i> Import
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="importFileInput" accept=".json" style="display: none;">
+
+    <!-- Category Details Modal -->
+    <div id="categoryDetailsModal" class="modal" onclick="if(event.target === this) planner.closeCategoryDetailsModal()">
+        <div class="modal-content category-details-modal">
+            <div class="modal-header">
+                <h3 id="categoryDetailsTitle">Category Details</h3>
+                <button class="close-btn" onclick="planner.closeCategoryDetailsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="categoryDetailsBody">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/planner.js"></script>
+</body>
+</html>
