@@ -799,7 +799,8 @@ class CoursePlanner {
         if (course.isCustom && course.customCategory === 'additive') return true;
         if (!Array.isArray(course['Available in'])) return false;
         return course['Available in'].some(avail => {
-            if (!avail.subtype || !avail.subtype.includes('Additive Electives')) return false;
+            // Check for both "Additive Electives" and "Internship/Lab Course" subtypes
+            if (!avail.subtype || (!avail.subtype.includes('Additive Electives') && !avail.subtype.includes('Internship/Lab Course'))) return false;
             if (fosFullName && avail.FoS) {
                 return avail.FoS === fosFullName || avail.FoS.includes('Custom');
             }
