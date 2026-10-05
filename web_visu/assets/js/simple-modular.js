@@ -55,11 +55,13 @@ const CONSTANTS = {
         PDF_TITLE: '#pdfTitle',
         CLOSE_PDF_MODAL: '#closePdfModal',
         SHOW_FAVORITES_ONLY: '#showFavoritesOnly',
-        HIDE_NOT_INTERESTED: '#hideNotInterested'
+        HIDE_NOT_INTERESTED: '#hideNotInterested',
+        HIDE_PLANNED: '#hidePlanned'
     },
     STORAGE_KEYS: {
         FAVORITES: 'kitkurs_favorites',
         NOT_INTERESTED: 'kitkurs_not_interested',
+        SEMESTER_PLAN: 'kitkurs_semester_plan',
         CUSTOM_COURSES: 'kitkurs_custom_courses'
     },
     // Course category helpers
@@ -503,7 +505,7 @@ class FilterComponent {
         }
 
         // Search filter
-        if (searchTerm && !course.Name.toLowerCase().includes(searchTerm)) {
+        if (searchTerm && !fuzzyMatch(course.Name, searchTerm)) {
             if (isCustom) console.log(`  → Filtered by SEARCH: "${searchTerm}"`);
             return false;
         }
@@ -1034,6 +1036,19 @@ class CourseCatalog {
             });
         }
 
+        // Hide planned courses toggle (re-filter when the plan changes in another tab)
+        const hidePlanned = document.querySelector(CONSTANTS.SELECTORS.HIDE_PLANNED);
+        if (hidePlanned) {
+            hidePlanned.addEventListener('change', () => {
+                this.handleFilter();
+            });
+            window.addEventListener('storage', (e) => {
+                if (e.key === null || e.key === CONSTANTS.STORAGE_KEYS.SEMESTER_PLAN) {
+                    this.handleFilter();
+                }
+            });
+        }
+
         // Checkbox event listeners
         document.addEventListener('change', (e) => {
             if (e.target.type === 'checkbox' && e.target.dataset.type) {
@@ -1065,6 +1080,15 @@ class CourseCatalog {
         const searchTerm = this.searchComponent.getSearchTerm();
         const showFavoritesOnly = document.querySelector(CONSTANTS.SELECTORS.SHOW_FAVORITES_ONLY);
         const hideNotInterested = document.querySelector(CONSTANTS.SELECTORS.HIDE_NOT_INTERESTED);
+        const hidePlanned = document.querySelector(CONSTANTS.SELECTORS.HIDE_PLANNED);
+        let plannedNames = new Set();
+        if (hidePlanned && hidePlanned.checked) {
+            try {
+                plannedNames = plannedCourseNames(localStorage.getItem(CONSTANTS.STORAGE_KEYS.SEMESTER_PLAN));
+            } catch (error) {
+                console.error('Error reading semester plan:', error);
+            }
+        }
         
         console.log('handleFilter: Starting filter with', this.courses.length, 'total courses');
         
@@ -1081,6 +1105,11 @@ class CourseCatalog {
                 if (this.favoritesManager.isNotInterested(course.Name)) {
                     return false;
                 }
+            }
+            
+            // Check hide planned filter
+            if (plannedNames.has(course.Name)) {
+                return false;
             }
             
             const matches = this.filterComponent.matchesFilters(course, searchTerm);
@@ -1455,6 +1484,7 @@ class CourseCatalog {
 }
 
 // Initialize the application when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await (window.accountReady || Promise.resolve());
     window.courseCatalog = new CourseCatalog();
 });

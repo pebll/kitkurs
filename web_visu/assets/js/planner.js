@@ -210,7 +210,7 @@ class CoursePlanner {
             }
 
             // Filter by search term
-            if (searchTerm && !course.Name.toLowerCase().includes(searchTerm)) {
+            if (searchTerm && !fuzzyMatch(course.Name, searchTerm)) {
                 return false;
             }
 
@@ -348,131 +348,6 @@ class CoursePlanner {
         }).join('');
     }
 
-    // Get which category a course counts toward (accounting for overflow)
-    getCourseCategory(course) {
-        const selectedFosFullName = this.fosSpecialization ? 
-            `Field of Specialization in Mechatronics and Information Technology / ${this.fosSpecialization}` : 
-            '';
-
-        // Priority 1: Thesis
-        if (this.isThesisCourse(course)) return '🎓 Thesis';
-        
-        // Priority 2: Interdisciplinary
-        if (this.isInterdisciplinaryCourse(course)) return '🧩 Interdisciplinary';
-        
-        // For FoS courses, we need to figure out where they actually count
-        // by simulating the allocation logic
-        const limits = {
-            thesis: 30,
-            interdisciplinary: 8,
-            methodical: 8,
-            general: 16,
-            additive: 36,
-            electiveArea: 22
-        };
-
-        const allocated = {
-            thesis: 0,
-            interdisciplinary: 0,
-            methodical: 0,
-            general: 0,
-            additive: 0,
-            electiveArea: 0
-        };
-
-        // Get all courses in order and allocate them to see where this one ends up
-        const allPlannedCourses = [];
-        Object.entries(this.semesterPlan).forEach(([semesterId, courses]) => {
-            courses.forEach(c => {
-                allPlannedCourses.push(c);
-            });
-        });
-
-        // Allocate each course and track where our target course ends up
-        for (const c of allPlannedCourses) {
-            const ects = parseInt(c.ECTS) || 0;
-            
-            // Skip if this is our target course - we'll determine its category at the end
-            const isTargetCourse = c.Name === course.Name;
-            
-            if (this.isThesisCourse(c)) {
-                if (isTargetCourse) return '🎓 Thesis';
-                allocated.thesis += ects;
-                continue;
-            }
-
-            if (this.isInterdisciplinaryCourse(c)) {
-                if (isTargetCourse) return '🧩 Interdisciplinary';
-                allocated.interdisciplinary += ects;
-                continue;
-            }
-
-            const canBeMethodical = this.isFosMethodicalCourse(c, selectedFosFullName);
-            const canBeGeneral = this.isFosGeneralCourse(c, selectedFosFullName);
-            const canBeAdditive = this.isFosAdditiveCourse(c, selectedFosFullName);
-            const canBeElective = this.isElectiveAreaCourse(c);
-
-            const matchesFos = !this.fosSpecialization || 
-                               (c.isCustom && ['methodical', 'general', 'additive'].includes(c.customCategory)) ||
-                               (Array.isArray(c['Available in']) && c['Available in'].some(avail => 
-                                   avail.FoS && avail.FoS === selectedFosFullName
-                               ));
-
-            let placed = false;
-
-            // Try methodical first (soft limit: under the limit)
-            if (!placed && matchesFos && canBeMethodical && allocated.methodical < limits.methodical) {
-                if (isTargetCourse) return '⚙️ FoS - Methodical';
-                allocated.methodical += ects;
-                placed = true;
-            }
-
-            // Then general
-            if (!placed && matchesFos && canBeGeneral && allocated.general < limits.general) {
-                if (isTargetCourse) return '📚 FoS - General';
-                allocated.general += ects;
-                placed = true;
-            }
-
-            // Then additive
-            if (!placed && matchesFos && canBeAdditive && allocated.additive < limits.additive) {
-                if (isTargetCourse) return '➕ FoS - Additive';
-                allocated.additive += ects;
-                placed = true;
-            }
-
-            // Then elective
-            if (!placed && canBeElective && allocated.electiveArea < limits.electiveArea) {
-                if (isTargetCourse) return '📋 Elective Area';
-                allocated.electiveArea += ects;
-                placed = true;
-            }
-
-            // Overflow logic for FoS courses
-            if (!placed && matchesFos) {
-                if (canBeMethodical) {
-                    if (canBeGeneral && allocated.general < limits.general) {
-                        if (isTargetCourse) return '📚 FoS - General (overflow)';
-                        allocated.general += ects;
-                        placed = true;
-                    }
-                    else if (canBeAdditive && allocated.additive < limits.additive) {
-                        if (isTargetCourse) return '➕ FoS - Additive (overflow)';
-                        allocated.additive += ects;
-                        placed = true;
-                    }
-                    else if (canBeElective && allocated.electiveArea < limits.electiveArea) {
-                        if (isTargetCourse) return '📋 Elective Area (overflow)';
-                        allocated.electiveArea += ects;
-                        placed = true;
-                    }
-                }
-            }
-        }
-        
-        return '❓ Uncategorized';
-    }
-
     // Calculate total ECTS for a semester
     calculateSemesterEcts(courses) {
         return courses.reduce((total, course) => {
@@ -521,7 +396,8 @@ class CoursePlanner {
 
     // Calculate category progress
     updateCategoryProgress() {
-        const categories = this.calculateCategoryEcts();
+        const allocation = this.allocatePlan();
+        const categories = allocation.totals;
         const categoryProgressElement = document.getElementById('categoryProgress');
         
         if (!categoryProgressElement) return;
@@ -530,7 +406,7 @@ class CoursePlanner {
             'thesis': { label: 'Master\'s Thesis', required: 30, icon: 'fa-graduation-cap' },
             'electiveArea': { label: 'Elective Area', required: 22, icon: 'fa-tasks' },
             'general': { label: 'FoS - General', required: 16, icon: 'fa-book' },
-            'additive': { label: 'FoS - Additive', required: 36, icon: 'fa-plus-circle' },
+            'additive': { label: 'FoS - Additive', required: allocation.required.additive, icon: 'fa-plus-circle' },
             'methodical': { label: 'FoS - Methodical', required: 8, icon: 'fa-cogs' },
             'interdisciplinary': { label: 'Interdisciplinary', required: 8, icon: 'fa-puzzle-piece' }
         };
@@ -637,120 +513,6 @@ class CoursePlanner {
         categoryProgressElement.innerHTML = html;
     }
 
-    // Calculate ECTS by category
-    calculateCategoryEcts() {
-        const categories = {
-            thesis: 0,
-            interdisciplinary: 0,
-            electiveArea: 0,
-            methodical: 0,
-            general: 0,
-            additive: 0
-        };
-
-        // Define maximum limits for each category
-        const limits = {
-            thesis: 30,
-            interdisciplinary: 8,
-            methodical: 8,
-            general: 16,
-            additive: 36,
-            electiveArea: 22
-        };
-
-        // Get all courses from all semesters
-        const allPlannedCourses = [];
-        Object.values(this.semesterPlan).forEach(semester => {
-            allPlannedCourses.push(...semester);
-        });
-
-        // Build the full FoS string for matching
-        const selectedFosFullName = this.fosSpecialization ? 
-            `Field of Specialization in Mechatronics and Information Technology / ${this.fosSpecialization}` : 
-            '';
-
-        allPlannedCourses.forEach(course => {
-            const ects = parseInt(course.ECTS) || 0;
-
-            // Priority 1: Master's Thesis (always counts here if it's a thesis)
-            if (this.isThesisCourse(course)) {
-                categories.thesis += ects;
-                return;
-            }
-
-            // Priority 2: Interdisciplinary (always counts here if it's interdisciplinary)
-            if (this.isInterdisciplinaryCourse(course)) {
-                categories.interdisciplinary += ects;
-                return;
-            }
-
-            // For FoS courses, we need to check what categories they CAN belong to
-            // and place them in the first non-full category
-            const canBeMethodical = this.isFosMethodicalCourse(course, selectedFosFullName);
-            const canBeGeneral = this.isFosGeneralCourse(course, selectedFosFullName);
-            const canBeAdditive = this.isFosAdditiveCourse(course, selectedFosFullName);
-            const canBeElective = this.isElectiveAreaCourse(course);
-
-            // Check if course matches selected FoS (needed for FoS categories)
-            const matchesFos = !this.fosSpecialization || 
-                               (course.isCustom && ['methodical', 'general', 'additive'].includes(course.customCategory)) ||
-                               (Array.isArray(course['Available in']) && course['Available in'].some(avail => 
-                                   avail.FoS && avail.FoS === selectedFosFullName
-                               ));
-
-            let placed = false;
-
-            // Try to place in priority order, respecting soft limits
-            // Soft limit: can add if UNDER the limit (even if it pushes over)
-            // Priority 3: Methodical (if matches FoS and under limit)
-            if (!placed && matchesFos && canBeMethodical && categories.methodical < limits.methodical) {
-                categories.methodical += ects;
-                placed = true;
-            }
-
-            // Priority 4: General (if matches FoS and under limit)
-            if (!placed && matchesFos && canBeGeneral && categories.general < limits.general) {
-                categories.general += ects;
-                placed = true;
-            }
-
-            // Priority 5: Additive (if matches FoS and under limit)
-            if (!placed && matchesFos && canBeAdditive && categories.additive < limits.additive) {
-                categories.additive += ects;
-                placed = true;
-            }
-
-            // Priority 6: Elective Area (if under limit, doesn't need FoS match)
-            if (!placed && canBeElective && categories.electiveArea < limits.electiveArea) {
-                categories.electiveArea += ects;
-                placed = true;
-            }
-
-            // If still not placed but could be in a FoS category that's full,
-            // try to overflow to next available category
-            if (!placed && matchesFos) {
-                if (canBeMethodical) {
-                    // Methodical is full, try general
-                    if (canBeGeneral && categories.general < limits.general) {
-                        categories.general += ects;
-                        placed = true;
-                    }
-                    // General is full, try additive
-                    else if (canBeAdditive && categories.additive < limits.additive) {
-                        categories.additive += ects;
-                        placed = true;
-                    }
-                    // Additive is full, try elective
-                    else if (canBeElective && categories.electiveArea < limits.electiveArea) {
-                        categories.electiveArea += ects;
-                        placed = true;
-                    }
-                }
-            }
-        });
-
-        return categories;
-    }
 
     // Helper functions for course categorization
     isThesisCourse(course) {
@@ -808,129 +570,56 @@ class CoursePlanner {
         });
     }
 
+    // Build the FoS full name used for matching course availability
+    getSelectedFosFullName() {
+        return this.fosSpecialization ?
+            `Field of Specialization in Mechatronics and Information Technology / ${this.fosSpecialization}` :
+            '';
+    }
+
+    // Run the shared category allocation over the whole plan (in plan order)
+    allocatePlan() {
+        const planned = [];
+        Object.entries(this.semesterPlan).forEach(([semesterId, courses]) => {
+            courses.forEach(course => planned.push({ course, semesterId }));
+        });
+        const selectedFosFullName = this.getSelectedFosFullName();
+        const classify = course => ({
+            isThesis: this.isThesisCourse(course),
+            isInterdisciplinary: this.isInterdisciplinaryCourse(course),
+            matchesFos: !this.fosSpecialization ||
+                (course.isCustom && ['methodical', 'general', 'additive'].includes(course.customCategory)) ||
+                (Array.isArray(course['Available in']) && course['Available in'].some(avail =>
+                    avail.FoS && avail.FoS === selectedFosFullName
+                )),
+            canMethodical: this.isFosMethodicalCourse(course, selectedFosFullName),
+            canGeneral: this.isFosGeneralCourse(course, selectedFosFullName),
+            canAdditive: this.isFosAdditiveCourse(course, selectedFosFullName),
+            canElective: this.isElectiveAreaCourse(course)
+        });
+        const result = allocateCategories(planned.map(p => p.course), classify);
+        result.assignments.forEach((a, i) => { a.semesterId = planned[i].semesterId; });
+        return result;
+    }
+
     // Get which category a course counts toward (accounting for overflow)
     getCourseCategory(course) {
-        const selectedFosFullName = this.fosSpecialization ? 
-            `Field of Specialization in Mechatronics and Information Technology / ${this.fosSpecialization}` : 
-            '';
-
-        // Priority 1: Thesis
-        if (this.isThesisCourse(course)) return '🎓 Thesis';
-        
-        // Priority 2: Interdisciplinary
-        if (this.isInterdisciplinaryCourse(course)) return '🧩 Interdisciplinary';
-        
-        // For FoS courses, we need to figure out where they actually count
-        // by simulating the allocation logic
-        const limits = {
-            thesis: 30,
-            interdisciplinary: 8,
-            methodical: 8,
-            general: 16,
-            additive: 36,
-            electiveArea: 22
+        const labels = {
+            thesis: '🎓 Thesis',
+            interdisciplinary: '🧩 Interdisciplinary',
+            methodical: '⚙️ FoS - Methodical',
+            general: '📚 FoS - General',
+            additive: '➕ FoS - Additive',
+            electiveArea: '📋 Elective Area'
         };
+        const assignment = this.allocatePlan().assignments.find(a => a.course.Name === course.Name);
+        if (!assignment || !assignment.category) return '❓ Uncategorized';
+        return labels[assignment.category] + (assignment.overflow ? ' (overflow)' : '');
+    }
 
-        const allocated = {
-            thesis: 0,
-            interdisciplinary: 0,
-            methodical: 0,
-            general: 0,
-            additive: 0,
-            electiveArea: 0
-        };
-
-        // Get all courses in order and allocate them to see where this one ends up
-        const allPlannedCourses = [];
-        Object.entries(this.semesterPlan).forEach(([semesterId, courses]) => {
-            courses.forEach(c => {
-                allPlannedCourses.push(c);
-            });
-        });
-
-        // Allocate each course and track where our target course ends up
-        for (const c of allPlannedCourses) {
-            const ects = parseInt(c.ECTS) || 0;
-            
-            // Skip if this is our target course - we'll determine its category at the end
-            const isTargetCourse = c.Name === course.Name;
-            
-            if (this.isThesisCourse(c)) {
-                if (isTargetCourse) return '🎓 Thesis';
-                allocated.thesis += ects;
-                continue;
-            }
-
-            if (this.isInterdisciplinaryCourse(c)) {
-                if (isTargetCourse) return '🧩 Interdisciplinary';
-                allocated.interdisciplinary += ects;
-                continue;
-            }
-
-            const canBeMethodical = this.isFosMethodicalCourse(c, selectedFosFullName);
-            const canBeGeneral = this.isFosGeneralCourse(c, selectedFosFullName);
-            const canBeAdditive = this.isFosAdditiveCourse(c, selectedFosFullName);
-            const canBeElective = this.isElectiveAreaCourse(c);
-
-            const matchesFos = !this.fosSpecialization || 
-                               (c.isCustom && ['methodical', 'general', 'additive'].includes(c.customCategory)) ||
-                               (Array.isArray(c['Available in']) && c['Available in'].some(avail => 
-                                   avail.FoS && avail.FoS === selectedFosFullName
-                               ));
-
-            let placed = false;
-
-            // Try methodical first (soft limit: under the limit)
-            if (!placed && matchesFos && canBeMethodical && allocated.methodical < limits.methodical) {
-                if (isTargetCourse) return '⚙️ FoS - Methodical';
-                allocated.methodical += ects;
-                placed = true;
-            }
-
-            // Then general
-            if (!placed && matchesFos && canBeGeneral && allocated.general < limits.general) {
-                if (isTargetCourse) return '📚 FoS - General';
-                allocated.general += ects;
-                placed = true;
-            }
-
-            // Then additive
-            if (!placed && matchesFos && canBeAdditive && allocated.additive < limits.additive) {
-                if (isTargetCourse) return '➕ FoS - Additive';
-                allocated.additive += ects;
-                placed = true;
-            }
-
-            // Then elective
-            if (!placed && canBeElective && allocated.electiveArea < limits.electiveArea) {
-                if (isTargetCourse) return '📋 Elective Area';
-                allocated.electiveArea += ects;
-                placed = true;
-            }
-
-            // Overflow logic for FoS courses
-            if (!placed && matchesFos) {
-                if (canBeMethodical) {
-                    if (canBeGeneral && allocated.general < limits.general) {
-                        if (isTargetCourse) return '📚 FoS - General (overflow)';
-                        allocated.general += ects;
-                        placed = true;
-                    }
-                    else if (canBeAdditive && allocated.additive < limits.additive) {
-                        if (isTargetCourse) return '➕ FoS - Additive (overflow)';
-                        allocated.additive += ects;
-                        placed = true;
-                    }
-                    else if (canBeElective && allocated.electiveArea < limits.electiveArea) {
-                        if (isTargetCourse) return '📋 Elective Area (overflow)';
-                        allocated.electiveArea += ects;
-                        placed = true;
-                    }
-                }
-            }
-        }
-        
-        return '❓ Uncategorized';
+    // Calculate ECTS by category
+    calculateCategoryEcts() {
+        return this.allocatePlan().totals;
     }
 
     // Show category details (which courses contribute to it)
@@ -941,116 +630,12 @@ class CoursePlanner {
         
         if (!modal || !modalTitle || !modalBody) return;
 
-        // Use the same allocation logic as calculateCategoryEcts to determine
-        // which courses actually count toward this category
-        const limits = {
-            thesis: 30,
-            interdisciplinary: 8,
-            methodical: 8,
-            general: 16,
-            additive: 36,
-            electiveArea: 22
-        };
-
-        const allocated = {
-            thesis: 0,
-            interdisciplinary: 0,
-            methodical: 0,
-            general: 0,
-            additive: 0,
-            electiveArea: 0
-        };
-
-        const coursesInCategory = [];
-        const selectedFosFullName = this.fosSpecialization ? 
-            `Field of Specialization in Mechatronics and Information Technology / ${this.fosSpecialization}` : 
-            '';
-
-        // Process courses in the same order as calculateCategoryEcts
-        Object.entries(this.semesterPlan).forEach(([semesterId, courses]) => {
-            courses.forEach(course => {
-                const ects = parseInt(course.ECTS) || 0;
-                let assignedTo = null;
-
-                // Priority 1: Thesis
-                if (this.isThesisCourse(course)) {
-                    assignedTo = 'thesis';
-                    allocated.thesis += ects;
-                }
-                // Priority 2: Interdisciplinary
-                else if (this.isInterdisciplinaryCourse(course)) {
-                    assignedTo = 'interdisciplinary';
-                    allocated.interdisciplinary += ects;
-                }
-                else {
-                    // Check what categories this course can belong to
-                    const canBeMethodical = this.isFosMethodicalCourse(course, selectedFosFullName);
-                    const canBeGeneral = this.isFosGeneralCourse(course, selectedFosFullName);
-                    const canBeAdditive = this.isFosAdditiveCourse(course, selectedFosFullName);
-                    const canBeElective = this.isElectiveAreaCourse(course);
-
-                    const matchesFos = !this.fosSpecialization || 
-                                       (course.isCustom && ['methodical', 'general', 'additive'].includes(course.customCategory)) ||
-                                       (Array.isArray(course['Available in']) && course['Available in'].some(avail => 
-                                           avail.FoS && avail.FoS === selectedFosFullName
-                                       ));
-
-                    let placed = false;
-
-                    // Try to place in priority order, respecting soft limits
-                    if (!placed && matchesFos && canBeMethodical && allocated.methodical < limits.methodical) {
-                        assignedTo = 'methodical';
-                        allocated.methodical += ects;
-                        placed = true;
-                    }
-
-                    if (!placed && matchesFos && canBeGeneral && allocated.general < limits.general) {
-                        assignedTo = 'general';
-                        allocated.general += ects;
-                        placed = true;
-                    }
-
-                    if (!placed && matchesFos && canBeAdditive && allocated.additive < limits.additive) {
-                        assignedTo = 'additive';
-                        allocated.additive += ects;
-                        placed = true;
-                    }
-
-                    if (!placed && canBeElective && allocated.electiveArea < limits.electiveArea) {
-                        assignedTo = 'electiveArea';
-                        allocated.electiveArea += ects;
-                        placed = true;
-                    }
-
-                    // Overflow logic
-                    if (!placed && matchesFos && canBeMethodical) {
-                        if (canBeGeneral && allocated.general < limits.general) {
-                            assignedTo = 'general';
-                            allocated.general += ects;
-                            placed = true;
-                        }
-                        else if (canBeAdditive && allocated.additive < limits.additive) {
-                            assignedTo = 'additive';
-                            allocated.additive += ects;
-                            placed = true;
-                        }
-                        else if (canBeElective && allocated.electiveArea < limits.electiveArea) {
-                            assignedTo = 'electiveArea';
-                            allocated.electiveArea += ects;
-                            placed = true;
-                        }
-                    }
-                }
-
-                // If this course was assigned to the category we're viewing, add it to the list
-                if (assignedTo === categoryKey) {
-                    coursesInCategory.push({
-                        course: course,
-                        semester: semesterId.replace('semester', 'Semester ')
-                    });
-                }
-            });
-        });
+        const coursesInCategory = this.allocatePlan().assignments
+            .filter(a => a.category === categoryKey)
+            .map(a => ({
+                course: a.course,
+                semester: a.semesterId.replace('semester', 'Semester ')
+            }));
 
         modalTitle.textContent = categoryLabel;
 
@@ -1076,7 +661,7 @@ class CoursePlanner {
                             <div class="category-course-info">
                                 <div class="category-course-name">${item.course.Name}</div>
                                 <div class="category-course-meta">
-                                    <span class="category-course-ects">${item.course.ECTS} CP</span>
+                                    <span class="category-course-ects">${item.course.ECTS}</span>
                                     <span class="category-course-semester">${item.semester}</span>
                                 </div>
                             </div>
@@ -1553,7 +1138,8 @@ class CoursePlanner {
 }
 
 // Initialize the planner when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await (window.accountReady || Promise.resolve());
     window.planner = new CoursePlanner();
 
     // Setup search input listener
