@@ -503,7 +503,7 @@ class FilterComponent {
         }
 
         // Search filter
-        if (searchTerm && !course.Name.toLowerCase().includes(searchTerm)) {
+        if (searchTerm && !fuzzyMatch(course.Name, searchTerm)) {
             if (isCustom) console.log(`  → Filtered by SEARCH: "${searchTerm}"`);
             return false;
         }

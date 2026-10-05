@@ -210,7 +210,7 @@ class CoursePlanner {
             }
 
             // Filter by search term
-            if (searchTerm && !course.Name.toLowerCase().includes(searchTerm)) {
+            if (searchTerm && !fuzzyMatch(course.Name, searchTerm)) {
                 return false;
             }
 
