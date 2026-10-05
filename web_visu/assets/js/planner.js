@@ -1553,7 +1553,8 @@ class CoursePlanner {
 }
 
 // Initialize the planner when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await (window.accountReady || Promise.resolve());
     window.planner = new CoursePlanner();
 
     // Setup search input listener

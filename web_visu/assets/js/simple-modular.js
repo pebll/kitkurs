@@ -1455,6 +1455,7 @@ class CourseCatalog {
 }
 
 // Initialize the application when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await (window.accountReady || Promise.resolve());
     window.courseCatalog = new CourseCatalog();
 });
