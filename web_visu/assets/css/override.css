@@ -282,3 +282,14 @@
 .course-card {
     /* Keep existing course card styles */
 }
+/* Native form controls: the site is dark-only, so tell the browser to render
+   dropdown popups, scrollbars and inputs with its dark theme. */
+:root {
+    color-scheme: dark;
+}
+
+select option,
+select optgroup {
+    background-color: var(--dark-bg-card);
+    color: var(--text-primary);
+}
