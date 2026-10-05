@@ -20,6 +20,9 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 ROOT = os.path.dirname(os.path.abspath(__file__))
 WEB_DIR = os.path.join(ROOT, 'web_visu')
 DEFAULT_DB = os.path.join(ROOT, 'data', 'kitkurs.db')
+# The pages use <base href="/kitkurs/">; accept requests with or without it
+# so the app works both locally and behind a reverse proxy at /kitkurs/.
+BASE_PREFIX = '/kitkurs'
 
 COOKIE_NAME = 'kitkurs_session'
 SESSION_TTL = 30 * 24 * 3600
@@ -158,6 +161,15 @@ class Handler(SimpleHTTPRequestHandler):
         super().__init__(*args, directory=WEB_DIR, **kwargs)
 
     # -- routing ---------------------------------------------------------
+    def parse_request(self):
+        ok = super().parse_request()
+        if ok and (self.path == BASE_PREFIX or self.path.startswith(BASE_PREFIX + '/')
+                   or self.path.startswith(BASE_PREFIX + '?')):
+            self.path = self.path[len(BASE_PREFIX):] or '/'
+            if self.path.startswith('?'):
+                self.path = '/' + self.path
+        return ok
+
     def do_GET(self):
         if self._is_api():
             self._dispatch('GET')

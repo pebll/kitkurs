@@ -175,6 +175,18 @@ class StaticTests(ServerTestCase):
         self.assertEqual(status, 200)
         self.assertIn(b'<html', payload)
 
+    def test_static_under_base_prefix(self):
+        status, _, _, payload = self.client().request('GET', '/kitkurs/index.html')
+        self.assertEqual(status, 200)
+        self.assertIn(b'<html', payload)
+
+    def test_api_under_base_prefix(self):
+        c = self.client()
+        self.assertEqual(c.request('POST', '/kitkurs/api/register',
+                                   {'username': 'prefixed', 'password': 'secret12'})[0], 201)
+        self.assertEqual(c.request('GET', '/kitkurs/api/me')[0], 200)
+        self.assertEqual(c.request('GET', '/api/me')[0], 200)
+
     def test_unknown_api_route(self):
         self.assertEqual(self.client().request('GET', '/api/nope')[0], 404)
 

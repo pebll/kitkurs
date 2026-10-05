@@ -62,7 +62,7 @@
         // Resolves once local state matches the server (or we know we are a guest).
         async init() {
             try {
-                const me = await api('GET', '/api/me');
+                const me = await api('GET', 'api/me');
                 if (me.ok && me.data && me.data.username) {
                     this.username = me.data.username;
                     await this.pullState();
@@ -75,10 +75,10 @@
         }
 
         async pullState() {
-            const res = await api('GET', '/api/state');
+            const res = await api('GET', 'api/state');
             if (!res.ok) throw new Error('state fetch failed');
             if (res.data.state === null) {
-                await api('PUT', '/api/state', { state: store.snapshot() });
+                await api('PUT', 'api/state', { state: store.snapshot() });
             } else {
                 store.replace(res.data.state);
             }
@@ -111,7 +111,7 @@
             clearTimeout(this.timer);
             this.pending = false;
             try {
-                const res = await api('PUT', '/api/state', { state: store.snapshot() },
+                const res = await api('PUT', 'api/state', { state: store.snapshot() },
                     keepalive ? { keepalive: true } : undefined);
                 if (!res.ok) throw new Error('save failed');
                 if (!this.pending) this.setStatus('Saved');
@@ -122,7 +122,7 @@
         }
 
         async login(username, password, register) {
-            const res = await api('POST', register ? '/api/register' : '/api/login',
+            const res = await api('POST', register ? 'api/register' : 'api/login',
                 { username, password });
             if (!res.ok) {
                 throw new Error((res.data && res.data.error) || 'Request failed');
@@ -134,7 +134,7 @@
 
         async logout() {
             if (this.pending) await this.save(false);
-            try { await api('POST', '/api/logout'); } catch (e) { /* cookie expires anyway */ }
+            try { await api('POST', 'api/logout'); } catch (e) { /* cookie expires anyway */ }
             let backup = {};
             try {
                 backup = JSON.parse(localStorage.getItem(BACKUP_KEY)) || {};
