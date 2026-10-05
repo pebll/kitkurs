@@ -661,7 +661,7 @@ class CoursePlanner {
                             <div class="category-course-info">
                                 <div class="category-course-name">${item.course.Name}</div>
                                 <div class="category-course-meta">
-                                    <span class="category-course-ects">${item.course.ECTS} CP</span>
+                                    <span class="category-course-ects">${item.course.ECTS}</span>
                                     <span class="category-course-semester">${item.semester}</span>
                                 </div>
                             </div>

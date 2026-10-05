@@ -150,78 +150,106 @@
 
         // ---- UI ----
         renderWidget() {
-            const host = document.querySelector('header.header nav.main-nav')
-                || document.querySelector('header.header');
-            if (!host) return;
             const widget = document.createElement('div');
             widget.className = 'account-widget';
             if (this.username) {
-                const name = document.createElement('span');
-                name.className = 'account-name';
-                name.textContent = this.username;
                 this.statusEl = document.createElement('span');
                 this.statusEl.className = 'account-status';
-                const out = this.button('Log out', () => this.logout());
-                widget.append(name, this.statusEl, out);
+                const name = document.createElement('span');
+                name.className = 'account-name';
+                name.innerHTML = '<i class="fas fa-user-circle"></i> ';
+                name.append(this.username);
+                const out = this.button('Log out', 'fa-sign-out-alt', () => this.logout());
+                widget.append(this.statusEl, name, out);
             } else {
-                widget.append(this.button('Log in', () => this.openModal()));
+                widget.append(this.button('Log in', 'fa-user-circle', () => this.openModal()));
             }
-            host.appendChild(widget);
+            document.body.appendChild(widget);
         }
 
-        button(label, onClick) {
+        button(label, icon, onClick) {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'account-btn';
-            btn.textContent = label;
+            btn.innerHTML = `<i class="fas ${icon}"></i> `;
+            btn.append(label);
             btn.addEventListener('click', onClick);
             return btn;
         }
 
         openModal() {
+            const MODES = {
+                login: {
+                    title: 'Log in',
+                    submit: 'Log in',
+                    switchText: "Don't have an account?",
+                    switchLabel: 'Sign up',
+                    passwordAutocomplete: 'current-password'
+                },
+                register: {
+                    title: 'Sign up',
+                    submit: 'Create account',
+                    switchText: 'Already have an account?',
+                    switchLabel: 'Log in',
+                    passwordAutocomplete: 'new-password'
+                }
+            };
+            let mode = 'login';
+
             const overlay = document.createElement('div');
             overlay.className = 'account-modal';
             overlay.innerHTML = `
-                <form class="account-modal-content" autocomplete="on">
-                    <h3>Account</h3>
-                    <p class="account-hint">Log in to keep your plan on the server. Without an account, data stays in this browser.</p>
+                <form class="account-modal-content" autocomplete="on" novalidate>
+                    <button type="button" class="account-close" aria-label="Close">&times;</button>
+                    <h3 class="account-title"></h3>
+                    <p class="account-hint">Your plan is saved to your account. Without one, it stays in this browser.</p>
                     <label>Username <input name="username" type="text" autocomplete="username" required minlength="3" maxlength="32"></label>
-                    <label>Password <input name="password" type="password" autocomplete="current-password" required minlength="6" maxlength="256"></label>
+                    <label>Password <input name="password" type="password" required minlength="6" maxlength="256"></label>
                     <div class="account-error" role="alert"></div>
-                    <div class="account-actions">
-                        <button type="submit" class="account-btn account-btn-primary" data-action="login">Log in</button>
-                        <button type="button" class="account-btn" data-action="register">Create account</button>
-                        <button type="button" class="account-btn" data-action="cancel">Cancel</button>
-                    </div>
+                    <button type="submit" class="account-btn account-btn-primary account-submit"></button>
+                    <p class="account-switch"><span></span> <button type="button" class="account-link"></button></p>
                 </form>`;
             const form = overlay.querySelector('form');
             const errorEl = overlay.querySelector('.account-error');
-            const close = () => overlay.remove();
+            const submitBtn = overlay.querySelector('.account-submit');
+            const close = () => {
+                overlay.remove();
+                document.removeEventListener('keydown', onKey);
+            };
+            const onKey = (e) => { if (e.key === 'Escape') close(); };
 
-            const submit = async (register) => {
+            const applyMode = () => {
+                const m = MODES[mode];
+                overlay.querySelector('.account-title').textContent = m.title;
+                submitBtn.textContent = m.submit;
+                overlay.querySelector('.account-switch span').textContent = m.switchText;
+                overlay.querySelector('.account-link').textContent = m.switchLabel;
+                form.password.autocomplete = m.passwordAutocomplete;
                 errorEl.textContent = '';
-                if (!form.reportValidity()) return;
-                const buttons = form.querySelectorAll('button');
-                buttons.forEach(b => { b.disabled = true; });
-                try {
-                    await this.login(form.username.value.trim(), form.password.value, register);
-                } catch (e) {
-                    errorEl.textContent = e.message;
-                    buttons.forEach(b => { b.disabled = false; });
-                }
             };
 
-            form.addEventListener('submit', (e) => { e.preventDefault(); submit(false); });
-            overlay.querySelector('[data-action="register"]')
-                .addEventListener('click', () => submit(true));
-            overlay.querySelector('[data-action="cancel"]').addEventListener('click', close);
-            overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
-            document.addEventListener('keydown', function onKey(e) {
-                if (e.key === 'Escape') {
-                    close();
-                    document.removeEventListener('keydown', onKey);
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorEl.textContent = '';
+                if (!form.reportValidity()) return;
+                submitBtn.disabled = true;
+                try {
+                    await this.login(form.username.value.trim(), form.password.value, mode === 'register');
+                } catch (err) {
+                    errorEl.textContent = err.message;
+                    submitBtn.disabled = false;
                 }
             });
+            overlay.querySelector('.account-link').addEventListener('click', () => {
+                mode = mode === 'login' ? 'register' : 'login';
+                applyMode();
+                form.username.focus();
+            });
+            overlay.querySelector('.account-close').addEventListener('click', close);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+            document.addEventListener('keydown', onKey);
+
+            applyMode();
             document.body.appendChild(overlay);
             form.username.focus();
         }

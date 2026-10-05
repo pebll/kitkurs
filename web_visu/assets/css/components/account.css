@@ -1,5 +1,9 @@
 /* Account widget and login modal */
 .account-widget {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    z-index: 100;
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -89,14 +93,67 @@
     font: inherit;
 }
 
+.account-error:empty {
+    display: none;
+}
+
 .account-error {
-    min-height: 1.2em;
     color: var(--error-color);
     font-size: 0.85rem;
 }
 
-.account-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+.account-btn i {
+    margin-right: 4px;
+}
+
+.account-modal-content {
+    position: relative;
+}
+
+.account-submit {
+    padding: 9px 14px;
+}
+
+.account-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.account-close:hover {
+    color: var(--text-primary);
+}
+
+.account-switch {
+    margin: 0;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.account-link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--kit-light-blue);
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .account-widget {
+        top: 8px;
+        right: 8px;
+    }
+
+    .account-status {
+        display: none;
+    }
 }
