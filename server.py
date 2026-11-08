@@ -261,7 +261,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     @staticmethod
     def _session_cookie(token, max_age=SESSION_TTL):
-        return f'{COOKIE_NAME}={token}; HttpOnly; SameSite=Lax; Path=/; Max-Age={max_age}'
+        return f'{COOKIE_NAME}={token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age={max_age}'
 
     @staticmethod
     def _credentials(body):

@@ -77,6 +77,7 @@ class AuthTests(ServerTestCase):
         cookie = resp.getheader('Set-Cookie')
         self.assertIn('kitkurs_session=', cookie)
         self.assertIn('HttpOnly', cookie)
+        self.assertIn('Secure', cookie)
         self.assertIn('SameSite=Lax', cookie)
         status, body, _, _ = c.request('GET', '/api/me')
         self.assertEqual((status, body['username']), (200, 'alice'))
